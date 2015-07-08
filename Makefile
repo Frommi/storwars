@@ -20,7 +20,7 @@ $(objdir):
 	mkdir -p $(objdir)
 
 $(exec): $(objects)
-	$(CXX) $(CXXFLAGS) $(addprefix $(objdir)/, $(objects)) -o $(bindir)/$@
+	$(CXX) $(addprefix $(objdir)/, $(objects)) -o $(bindir)/$@ $(CXXFLAGS)
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $(objdir)/$@
