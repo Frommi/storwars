@@ -1,0 +1,14 @@
+*.exe
+*.o
+*.aux
+*.log
+*.nav
+*.out
+*.pdf
+*.snm
+*.toc
+*.jpg
+*.vrb
+debug/
+bin/
+obj/
