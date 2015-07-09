@@ -1,4 +1,4 @@
-#include "Application.h"
+#include "application.h"
 
 static Application* s_app;
 

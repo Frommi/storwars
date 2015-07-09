@@ -8,7 +8,7 @@
 #include <string>
 #include <cstring>
 
-#include "InputHandler.h"
+#include "input_handler.h"
 
 class Application : public InputHandler {
 public:

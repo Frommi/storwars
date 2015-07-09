@@ -1,4 +1,4 @@
-#include "InputHandler.h"
+#include "input_handler.h"
 
 static InputHandler* s_inputHandler;
 
