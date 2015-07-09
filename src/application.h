@@ -2,6 +2,7 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+
 #include <cmath>
 #include <cstdlib>
 #include <string>
@@ -22,5 +23,5 @@ private:
         fputs(description, stderr);
     }
 
-    GLFWwindow* window;
+    GLFWwindow* window_;
 };

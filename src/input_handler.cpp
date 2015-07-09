@@ -10,8 +10,8 @@ static void mouseButtonCallback(GLFWwindow* window, int button, int action, int 
     s_inputHandler->inputMouseButton(button, action, mods);
 }
 
-static void cursorPositionCallback(GLFWwindow* window, double xPos, double yPos) {
-    s_inputHandler->inputCursorPos(xPos, yPos);
+static void cursorPositionCallback(GLFWwindow* window, double x_pos, double y_pos) {
+    s_inputHandler->inputCursorPos(x_pos, y_pos);
 }
 
 void InputHandler::initInputHandler(GLFWwindow* window) {
@@ -25,18 +25,18 @@ void InputHandler::inputKeyboardKey(int key, int scancode, int action, int mods)
     if (key == GLFW_KEY_UNKNOWN) return;
     if (action == GLFW_REPEAT) return;
 
-    bool newState = (action == GLFW_PRESS);
-    inputKeyboardKeyState[key] = newState;
+    bool new_state = (action == GLFW_PRESS);
+    input_keyboard_key_state_[key] = new_state;
 }
 
 void InputHandler::inputMouseButton(int button, int action, int mods) {
-    bool newState = (action == GLFW_PRESS);
-    inputMouseButtonState[button] = newState;
+    bool new_state = (action == GLFW_PRESS);
+    input_mouse_button_state_[button] = new_state;
 }
 
-void InputHandler::inputCursorPos(double xPos, double yPos) {
-    deltaCursorX += xPos - cursorX;
-    deltaCursorY += yPos - cursorY;
-    cursorX = xPos;
-    cursorY = yPos;
+void InputHandler::inputCursorPos(double x_pos, double y_pos) {
+    delta_cursor_x_ += x_pos - cursor_x_;
+    delta_cursor_y_ += y_pos - cursor_y_;
+    cursor_x_ = x_pos;
+    cursor_y_ = y_pos;
 }

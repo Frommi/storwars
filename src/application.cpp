@@ -6,12 +6,12 @@ void Application::initApp() {
     if (!glfwInit()) exit(EXIT_FAILURE);
     glfwSetErrorCallback(errorCallback);
 
-    window = glfwCreateWindow(640, 480, "SToR Wars", NULL, NULL);
-    if (!window) {
+    window_ = glfwCreatewindow_(640, 480, "SToR Wars", NULL, NULL);
+    if (!window_) {
         glfwTerminate();
         exit(EXIT_FAILURE);
     }
-    glfwMakeContextCurrent(window);
+    glfwMakeContextCurrent(window_);
 
     glewExperimental = true;
     if (glewInit() != GLEW_OK) {
@@ -24,7 +24,7 @@ void Application::initApp() {
     glEnable(GL_CULL_FACE);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-    initInputHandler(window);
+    this->initInputHandler(window_);
 }
 
 void Application::terminateApp() {

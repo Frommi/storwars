@@ -1,11 +1,11 @@
 #include "Application.h"
 
-static Application* app;
+static Application* s_app;
 
 int main() {
-    app = new Application();
-    app->initApp();
-    app->run();
-    app->terminateApp();
-    delete app;
+    s_app = new Application();
+    s_app->initApp();
+    s_app->run();
+    s_app->terminateApp();
+    delete s_app;
 }
