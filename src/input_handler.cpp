@@ -18,6 +18,10 @@ void InputHandler::initInputHandler(GLFWwindow* window) {
     glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
+    glfwSetKeyCallback(window, keyboardKeyCallback);
+    glfwSetMouseButtonCallback(window, mouseButtonCallback);
+    glfwSetCursorPosCallback(window, cursorPositionCallback);
+
     s_inputHandler = this;
 }
 

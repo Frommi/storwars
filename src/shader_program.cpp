@@ -5,7 +5,7 @@ ShaderProgram::ShaderProgram() {
 }
 
 ShaderProgram::~ShaderProgram() {
-    for (int i = 0; i < shader_objects_.size(); ++i)
+    for (int i = 0; i < static_cast<int>(shader_objects_.size()); ++i)
         glDeleteShader(shader_objects_[i]);
 
     if (shader_program_obj_ != 0) {
@@ -14,7 +14,7 @@ ShaderProgram::~ShaderProgram() {
     }
 }
 
-bool ShaderProgram::initShaderProgram() {
+bool ShaderProgram::preInit() {
     shader_program_obj_ = glCreateProgram();
 
     if (shader_program_obj_ == 0) {
@@ -41,7 +41,7 @@ bool ShaderProgram::addShader(const std::string& file_name, const GLenum shader_
     const std::string shader_text = loadShaderFromFile(file_name);
 
     GLuint shader_obj = glCreateShader(shader_type);
-    if (shader_obj == 0){
+    if (shader_obj == 0) {
         fprintf(stderr, "Error creating shader type %d\n", shader_type);
         return false;
     }
@@ -59,7 +59,7 @@ bool ShaderProgram::addShader(const std::string& file_name, const GLenum shader_
     GLint success;
     glGetShaderiv(shader_obj, GL_COMPILE_STATUS, &success);
 
-    if (!success){
+    if (!success) {
         GLchar info_log[1024];
         glGetShaderInfoLog(shader_obj, 1024, NULL, info_log);
         fprintf(stderr, "Error compiling shader type %d: '%s'\n", shader_type, info_log);
@@ -78,7 +78,7 @@ bool ShaderProgram::compileShaderProgram() {
     glLinkProgram(shader_program_obj_);
 
     glGetProgramiv(shader_program_obj_, GL_LINK_STATUS, &success);
-    if (success == 0){
+    if (success == 0) {
         glGetProgramInfoLog(shader_program_obj_, sizeof(error_log), NULL, error_log);
         fprintf(stderr, "Error linking shader program: '%s'\n", error_log);
         return false;
@@ -86,13 +86,13 @@ bool ShaderProgram::compileShaderProgram() {
 
     glValidateProgram(shader_program_obj_);
     glGetProgramiv(shader_program_obj_, GL_VALIDATE_STATUS, &success);
-    if (success == 0){
+    if (success == 0) {
         glGetProgramInfoLog(shader_program_obj_, sizeof(error_log), NULL, error_log);
         fprintf(stderr, "Invalid shader program: '%s'\n", error_log);
         return false;
     }
 
-    for (int i = 0; i < shader_objects_.size(); ++i)
+    for (int i = 0; i < static_cast<int>(shader_objects_.size()); ++i)
         glDeleteShader(shader_objects_[i]);
     shader_objects_.clear();
 
