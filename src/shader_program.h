@@ -8,18 +8,18 @@
 
 class ShaderProgram {
 public:
-	ShaderProgram();
-	~ShaderProgram();
+    ShaderProgram();
+    ~ShaderProgram();
 
-	virtual bool initShaderProgram();
+    virtual bool initShaderProgram();
 
 protected:
-	bool addShader(const std::string& file_name, const GLenum shader_type);
-	bool compileShaderProgram();
+    bool addShader(const std::string& file_name, const GLenum shader_type);
+    bool compileShaderProgram();
 
 private:
-	static std::string loadShaderFromFile(const std::string& file_name);
+    static std::string loadShaderFromFile(const std::string& file_name);
 
-	GLuint shader_program_obj_;
-	std::vector<GLuint> shader_objects_;
+    GLuint shader_program_obj_;
+    std::vector<GLuint> shader_objects_;
 };

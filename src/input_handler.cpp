@@ -2,15 +2,15 @@
 
 static InputHandler* s_inputHandler;
 
-static void keyboardKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+static void keyboardKeyCallback(GLFWwindow*, int key, int scancode, int action, int mods) {
     s_inputHandler->inputKeyboardKey(key, scancode, action, mods);
 }
 
-static void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
+static void mouseButtonCallback(GLFWwindow*, int button, int action, int mods) {
     s_inputHandler->inputMouseButton(button, action, mods);
 }
 
-static void cursorPositionCallback(GLFWwindow* window, double x_pos, double y_pos) {
+static void cursorPositionCallback(GLFWwindow*, double x_pos, double y_pos) {
     s_inputHandler->inputCursorPos(x_pos, y_pos);
 }
 
@@ -21,7 +21,7 @@ void InputHandler::initInputHandler(GLFWwindow* window) {
     s_inputHandler = this;
 }
 
-void InputHandler::inputKeyboardKey(int key, int scancode, int action, int mods) {
+void InputHandler::inputKeyboardKey(int key, int, int action, int) {
     if (key == GLFW_KEY_UNKNOWN) return;
     if (action == GLFW_REPEAT) return;
 
@@ -29,7 +29,7 @@ void InputHandler::inputKeyboardKey(int key, int scancode, int action, int mods)
     input_keyboard_key_state_[key] = new_state;
 }
 
-void InputHandler::inputMouseButton(int button, int action, int mods) {
+void InputHandler::inputMouseButton(int button, int action, int) {
     bool new_state = (action == GLFW_PRESS);
     input_mouse_button_state_[button] = new_state;
 }

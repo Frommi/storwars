@@ -19,7 +19,7 @@ public:
     void terminateApp();
 
 private:
-    static void errorCallback(int error, const char* description) {
+    static void errorCallback(int, const char* description) {
         fputs(description, stderr);
     }
 
