@@ -1,5 +1,7 @@
 #include "application.h"
 
+#include "world_pipeline.h"
+
 Application::Application() {}
 
 void Application::initApp() {
@@ -65,7 +67,7 @@ void Application::run() {  // Temporary
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         //glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-
+/*
         glm::mat4 m = glm::mat4(1.0f);
         float width = 640.0f;
         float height = 480.0f;
@@ -86,7 +88,7 @@ void Application::run() {  // Temporary
         move[0][3] = xr;
         move[1][3] = yr;
         move[2][3] = -1.0f;
-
+*/
         glm::mat4 sca = glm::mat4(1.0f);
 
         sca[0][0] = scale;
@@ -94,8 +96,15 @@ void Application::run() {  // Temporary
         sca[2][2] = scale;
         sca[3][3] = 1.0;
 
-        static_shader_program->set_WVP_matrix_uniform(sca * m * move);
+        glm::vec3 position(xr, yr, -1.0f);
+        glm::quat direction(0, 1, 0, 0);
+        Camera camera(position, direction);
 
+        WorldPipeline pipe;
+        pipe.set_camera(camera);
+        pipe.set_projection(window_);
+
+        static_shader_program->set_WVP_matrix_uniform(sca * pipe.get_WVP_matrix());
         static_mesh->render();
 
         glfwSwapBuffers(window_);

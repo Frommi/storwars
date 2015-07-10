@@ -11,25 +11,27 @@
 
 #include <GLFW/glfw3.h>
 
-class Camera {
+struct Camera {
+    Camera(const glm::vec3& pos, const glm::quat& dir):
+        position(pos), direction(dir) {}
+    ~Camera() = default;
+
     glm::vec3 position;
-    glm::quat direction; // this quat is rotating
+    glm::quat direction;
 };
 
 class WorldPipeline {
 public:
     WorldPipeline();
 
-    void setMove(const glm::vec3& move_vector);
-    void setRotation(const glm::quat& rotation);
-    void setProjection(const GLFWwindow* window);
-    void setCamera(const Camera& camera);
+    void set_move(const glm::vec3& move_vector);
+    void set_rotation(const glm::quat& rotation);
+    void set_projection(const GLFWwindow* window);
+    void set_camera(const Camera& camera);
+
+    glm::mat4 get_WVP_matrix();
 
     ~WorldPipeline() = default;
-
-private:
-    void setCameraMove();
-    void setCameraRotate();
 
 private:
     glm::mat4 move_, rotate_, projection_, camera_rotate_, camera_move_;

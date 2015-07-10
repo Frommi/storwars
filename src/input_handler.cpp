@@ -14,6 +14,11 @@ static void cursorPositionCallback(GLFWwindow*, double x_pos, double y_pos) {
     s_inputHandler->inputCursorPos(x_pos, y_pos);
 }
 
+InputHandler::InputHandler() {
+    memset(input_keyboard_key_state_, 0, sizeof(input_keyboard_key_state_));
+    memset(input_mouse_button_state_, 0, sizeof(input_mouse_button_state_));
+}
+
 void InputHandler::initInputHandler(GLFWwindow* window) {
     glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
