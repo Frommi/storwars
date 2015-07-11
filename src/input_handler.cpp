@@ -11,12 +11,14 @@ static void mouseButtonCallback(GLFWwindow*, int button, int action, int mods) {
 }
 
 static void cursorPositionCallback(GLFWwindow*, double x_pos, double y_pos) {
-    s_inputHandler->inputCursorPos(x_pos, y_pos);
+    s_inputHandler->inputCursorPos(glm::vec2(static_cast<float>(x_pos), static_cast<float>(y_pos)));
 }
 
 InputHandler::InputHandler() {
     memset(input_keyboard_key_state_, 0, sizeof(input_keyboard_key_state_));
     memset(input_mouse_button_state_, 0, sizeof(input_mouse_button_state_));
+    delta_cursor_pos_ = glm::vec2(0.0f);
+    cursor_pos_ = glm::vec2(0.0f);
 }
 
 void InputHandler::initInputHandler(GLFWwindow* window) {
@@ -43,9 +45,7 @@ void InputHandler::inputMouseButton(int button, int action, int) {
     input_mouse_button_state_[button] = new_state;
 }
 
-void InputHandler::inputCursorPos(double x_pos, double y_pos) {
-    delta_cursor_x_ += x_pos - cursor_x_;
-    delta_cursor_y_ += y_pos - cursor_y_;
-    cursor_x_ = x_pos;
-    cursor_y_ = y_pos;
+void InputHandler::inputCursorPos(glm::vec2 cursor_pos) {
+    delta_cursor_pos_ += cursor_pos - cursor_pos_;
+    cursor_pos_ = cursor_pos;
 }

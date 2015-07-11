@@ -31,81 +31,55 @@ void Application::terminateApp() {
     glfwTerminate();
 }
 
-#define ToRadian(x) (float)(((x) * M_PI / 180.0f))  // Temporary
-#define ToDegree(x) (float)(((x) * 180.0f / M_PI))  // Temporary
-
 void Application::run() {  // Temporary
     StaticShaderProgram* static_shader_program = new StaticShaderProgram();
     static_shader_program->initShaderProgram();
     static_shader_program->enable();
 
     StaticMesh* static_mesh = new StaticMesh();
-    static_mesh->loadFromFile("sphere.obj");
+    static_mesh->loadFromFile("models/sphere.obj");
 
-    float xr = 0.0f, yr = 0.0f, scale = 0.05f;
+    Camera camera(glm::vec3(0.0, 0.0, -20.0));
     while (!glfwWindowShouldClose(window_)) {
         if (this->isKeyboardKeyPressed(GLFW_KEY_ESCAPE)) 
             glfwSetWindowShouldClose(window_, GL_TRUE);
 
         if (this->isKeyboardKeyPressed(GLFW_KEY_A)) 
-            xr += 0.1f;
+            camera.updatePositionBy(-camera.get_right());
 
         if (this->isKeyboardKeyPressed(GLFW_KEY_D)) 
-            xr -= 0.1f;
+            camera.updatePositionBy(camera.get_right());
 
         if (this->isKeyboardKeyPressed(GLFW_KEY_S)) 
-            yr += 0.1f;
+            camera.updatePositionBy(-camera.get_target());
 
         if (this->isKeyboardKeyPressed(GLFW_KEY_W)) 
-            yr -= 0.1f;
+            camera.updatePositionBy(camera.get_target());
 
+        float roll = 0.0f;
         if (this->isKeyboardKeyPressed(GLFW_KEY_Q)) 
-            scale *= 1.05f;
+            roll -= 0.1f;
 
         if (this->isKeyboardKeyPressed(GLFW_KEY_E)) 
-            scale /= 1.05f;
+            roll += 0.1f;
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        //glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-/*
-        glm::mat4 m = glm::mat4(1.0f);
-        float width = 640.0f;
-        float height = 480.0f;
-        float FOV = 71.0f;
-        float zNear = 0.1f;
-        float zFar = 100.0f;
-        float ar = ((float) width) / height;
-        float tanFOV = tan(ToRadian(FOV / 2.0f));
-        m[0][0] = 1.0f / (tanFOV * ar);
-        m[1][1] = 1.0f / tanFOV;
-        m[2][2] = (zNear + zFar) / (zFar - zNear);
-        m[2][3] = 2.0f * zFar * zNear / (zNear - zFar);
-        m[3][2] = 1.0f;
-        m[3][3] = 0.0f;
 
-        glm::mat4 move = glm::mat4(1.0f);
+        for (int i = -3; i <= 3; ++i) {
+            for (int j = -3; j <= 3; ++j) {
+                for (int k = -3; k <= 3; ++k) {
+                    WorldPipeline pipe;
+                    glm::vec2 d_mouse = -pullCursorDelta();
+                    camera.rotatePitchYawRoll(-d_mouse.y, -d_mouse.x, roll);
+                    pipe.set_camera(camera);
+                    pipe.set_projection(window_);
+                    pipe.set_move(glm::vec3(i * 50, j * 50, k * 50));
 
-        move[0][3] = xr;
-        move[1][3] = yr;
-        move[2][3] = -1.0f;
-*/
-        glm::mat4 sca = glm::mat4(1.0f);
-
-        sca[0][0] = scale;
-        sca[1][1] = scale;
-        sca[2][2] = scale;
-        sca[3][3] = 1.0;
-
-        glm::vec3 position(xr, yr, -1.0f);
-        glm::quat direction(0, 1, 0, 0);
-        Camera camera(position, direction);
-
-        WorldPipeline pipe;
-        pipe.set_camera(camera);
-        pipe.set_projection(window_);
-
-        static_shader_program->set_WVP_matrix_uniform(sca * pipe.get_WVP_matrix());
-        static_mesh->render();
+                    static_shader_program->set_WVP_matrix_uniform(pipe.get_WVP_matrix());
+                    static_mesh->render();
+                }
+            }
+        }
 
         glfwSwapBuffers(window_);
         glfwPollEvents();

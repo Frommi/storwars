@@ -4,10 +4,10 @@ bool StaticShaderProgram::initShaderProgram() {
     if (!this->preInit()) 
         return false;
 
-    if (!this->addShader("vs.glsl", GL_VERTEX_SHADER)) 
+    if (!this->addShader("shaders/vs.glsl", GL_VERTEX_SHADER)) 
         return false;
 
-    if (!this->addShader("fs.glsl", GL_FRAGMENT_SHADER)) 
+    if (!this->addShader("shaders/fs.glsl", GL_FRAGMENT_SHADER)) 
         return false;
 
     if (!this->compileShaderProgram())
