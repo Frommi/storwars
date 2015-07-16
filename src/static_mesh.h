@@ -41,5 +41,7 @@ private:
         GLuint IBO;
     };
 
+    friend struct STRBody;
+
     std::vector<HomogeneousStaticMesh> homo_meshes_;
 };

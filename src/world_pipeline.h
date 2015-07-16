@@ -6,13 +6,14 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
 class Camera {
 public:
     Camera(const glm::vec3& pos):
         position_(pos), 
-        direction_(glm::quat(0.0, 0.0, 0.0, 1.0)) 
+        direction_(glm::quat(0.0f, 0.0f, 0.0f, 1.0f)) 
     {}
 
     Camera(const glm::vec3& pos, const glm::quat& dir):

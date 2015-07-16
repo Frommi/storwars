@@ -14,6 +14,7 @@ void Application::initApp() {
         exit(EXIT_FAILURE);
     }
     glfwMakeContextCurrent(window_);
+    glfwSwapInterval(1);
 
     glewExperimental = true;
     if (glewInit() != GLEW_OK) {
@@ -58,16 +59,17 @@ void Application::run() {  // Temporary
 
         float roll = 0.0f;
         if (this->isKeyboardKeyPressed(GLFW_KEY_Q)) 
-            roll -= 0.1f;
+            roll += 0.1f;
 
         if (this->isKeyboardKeyPressed(GLFW_KEY_E)) 
-            roll += 0.1f;
+            roll -= 0.1f;
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        for (int i = -3; i <= 3; ++i) {
-            for (int j = -3; j <= 3; ++j) {
-                for (int k = -3; k <= 3; ++k) {
+        int c = 5;
+        for (int i = -c; i <= c; ++i) {
+            for (int j = -c; j <= c; ++j) {
+                for (int k = -c; k <= c; ++k) {
                     WorldPipeline pipe;
                     glm::vec2 d_mouse = -pullCursorDelta();
                     camera.rotatePitchYawRoll(-d_mouse.y, -d_mouse.x, roll);
