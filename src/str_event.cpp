@@ -3,10 +3,17 @@
 #include <math.h>
 #include <cassert>
 
-STREvent::STREvent(glm::vec3 pos, glm::vec3 imp, float i_time, float s_time) {
+STREvent::STREvent() {
+    position  = glm::vec3(0.0f);
+    IFR_time  = 0.0f;
+    impulse   = glm::vec3(0.0f);
+    self_time = 0.0f;
+}
+
+STREvent::STREvent(const glm::vec3& pos, float i_time, const glm::vec3& imp, float s_time) {
     position  = pos;
-    impulse   = imp;
     IFR_time  = i_time;
+    impulse   = imp;
     self_time = s_time;
 }
 
@@ -55,14 +62,14 @@ STREvent STRTrajectory::get_seen_event(const STREvent& observer) const {
     float c = -glm::dot(s, s) + 2 * s.w * s.w;
 
     float D = sqrt(b * b - 4 * a * c); // it should always be zero
-    assert(fabs(D) < 0.001);
+    assert(fabs(D) < 1e-5);
 
     float alpha = -b / (2 * a); // "$a" can only be zero when object is moving with a speed of light
 
     STREvent res = STREvent(
        glm::vec3(p) + alpha * glm::vec3(dp),
-       in_past.impulse,
        in_past.IFR_time + alpha * (in_future.IFR_time - in_past.IFR_time),
+       in_past.impulse + alpha * (in_future.impulse - in_past.impulse),
        in_past.self_time + alpha * (in_future.self_time - in_past.self_time)
     );
 

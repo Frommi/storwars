@@ -3,13 +3,14 @@
 #include <glm/glm.hpp>
 
 struct STREvent {
-    STREvent(glm::vec3 pos, glm::vec3 imp, float i_time, float s_time);
+    STREvent();
+    STREvent(const glm::vec3& pos, float i_time, const glm::vec3& imp, float s_time);
 
     bool isInPast(const STREvent& event) const;
 
     glm::vec3 position;
-    glm::vec3 impulse;
     float IFR_time;
+    glm::vec3 impulse;
     float self_time;
 };
 

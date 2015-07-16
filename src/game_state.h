@@ -1,6 +1,7 @@
 #pragma once
 
 #include "static_mesh.h"
+#include "str_event.h"
 
 struct STRBody {
     STRBody(const StaticMesh& static_mesh) {
