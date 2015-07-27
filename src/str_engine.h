@@ -114,9 +114,9 @@ private:
 
 class STREngine {
 public:
-    virtual void initEngine(float dt, float map_diameter, int skips_num, int event_cnt, int body_cnt) = 0;
+    virtual void initEngine() = 0;
 
-    virtual STRBody* addSTRBody(const StaticMesh& body_mesh, const glm::vec3& eye_position, 
+    virtual STRBody* addSTRBody(const StaticMesh& body_mesh, const glm::vec3& eye_position, float eye_IFR_time,
                                 const glm::quat& eye_direction, const glm::vec3& eye_force) = 0;
 
     virtual void updateEye(STRBody* body, const glm::quat& eye_direction, const glm::vec3& eye_force) = 0;
@@ -130,7 +130,7 @@ public:
     virtual void computeSTREvents() = 0;
     virtual void computeSeenSTREvents(const STREvent& observer) = 0;
 
-private:
+protected:
     virtual void addVertexToInit(const VertexInfoToInit& vertex) = 0;
     virtual void addBodyToInit(const BodyInfoToInit& body) = 0;
     virtual void initVertices() = 0;
