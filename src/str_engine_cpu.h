@@ -35,12 +35,14 @@ protected:
     const int kSkipsNum;
     const int kMaxSTREventCnt;
     const int kMaxSTRBodiesCnt;
+    
+    int tick;
 
 // VRAM "simulating"
     std::vector<STRTrajectory> trajectory_buffer_;
     std::vector<VertexInfo> vertex_info_buffer_;
     std::vector<BodyInfo> body_info_buffer_;
-    std::vector<VertexInfoToInit> vertices_to_init_buffer;
-    std::vector<BodyInfoToInit> bodies_to_init_buffer;
-    std::vector<STREvent> seen_events_buffer;
+    std::vector<VertexInfoToInit> vertices_to_init_buffer_;
+    std::vector<BodyInfoToInit> bodies_to_init_buffer_;
+    std::vector<STREvent> seen_events_buffer_;
 };

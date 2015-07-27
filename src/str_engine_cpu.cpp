@@ -6,7 +6,8 @@ STREngineCPU::STREngineCPU(int ticks_per_sec, float map_diameter, int skips_num,
     kMapDiameter(map_diameter),
     kSkipsNum(skips_num),
     kMaxSTREventCnt(event_cnt),
-    kMaxSTRBodiesCnt(body_cnt)
+    kMaxSTRBodiesCnt(body_cnt),
+    tick(0)
 {}
 
 void STREngineCPU::initEngine() {
@@ -26,8 +27,8 @@ void STREngineCPU::initEngine() {
     for (int i = 0; i < kMaxSTREventCnt; ++i)
         trajectory_buffer_.push_back(STRTrajectory(kMapDiameter, kTicksPerSec, kSkipsNum));
 
-    vertices_to_init_buffer.clear();
-    bodies_to_init_buffer.clear();
+    vertices_to_init_buffer_.clear();
+    bodies_to_init_buffer_.clear();
 }
 
 STRBody* STREngineCPU::addSTRBody(const StaticMesh& body_mesh, const glm::vec3& eye_position, float eye_IFR_time, 
@@ -140,13 +141,60 @@ void STREngineCPU::findCollisions() {
 }
 
 void STREngineCPU::computeForces() {
+    for (int i = 0; i < kMaxSTREventCnt; ++i) {
+        VertexInfo vertex = vertex_info_buffer_[i];
+        BodyInfo body = body_info_buffer_[vertex.body_index];
 
+        STREvent seen_eye = trajectory_buffer_[body.eye_index].get_seen_event(vertex.last_event);
+        vertex.force = glm::vec3((body.eye_rotation * glm::vec4(vertex.mesh_position, 1.0f))) - 
+                       (seen_eye.position - vertex.last_event.position);
+
+        vertex_info_buffer_[i] = vertex;
+    }
 }
 
 void STREngineCPU::computeSTREvents() {
-    // calculating new STREvents
+    for (int i = 0; i < kMaxSTREventCnt; ++i) {
+        STREvent event = vertex_info_buffer_[i].last_event;
+        glm::vec3 force = vertex_info_buffer_[i].force;
+
+        float force_sqr = glm::dot(force, force);
+        float g = 1.0f / sqrt(1.0f + glm::dot(event.impulse, event.impulse));
+
+        if (force_sqr < 1e-12) {
+            double t0 = kDt * g;
+            glm::vec3 v = event.impulse * g;
+            vertex_info_buffer_[i].last_event = STREvent(event.position + v * kDt, event.IFR_time + kDt,
+                                                         event.impulse, event.self_time + t0);
+            continue;
+        }
+
+        float inverse_force_abs = 1.0f / sqrt(force_sqr);
+        float inverse_force_sqr = 1.0f / force_sqr;
+
+        glm::vec3 at = force * kDt;
+        glm::vec3 new_impulse = event.impulse + at;
+        float new_g = sqrt(1.0f + glm::dot(new_impulse, new_impulse));
+
+        float impulse_proj = glm::dot(event.impulse, force) * inverse_force_abs;
+
+        float t0 = log((new_g + glm::length(at) + impulse_proj) / (g + impulse_proj)) * inverse_force_abs;
+
+        glm::vec3 inverse_force = force * inverse_force_sqr;
+        glm::vec3 force_impulse_force = glm::cross(force, (glm::cross(event.impulse, force))) * (t0 * inverse_force_sqr);
+
+        glm::vec3 new_position = event.position + (inverse_force * (new_g - g)) + force_impulse_force;
+
+        vertex_info_buffer_[i].last_event = STREvent(new_position, event.IFR_time + kDt, 
+                                                     new_impulse, event.self_time + t0);
+
+        if (tick % (kSkipsNum + 1) == 0)
+            trajectory_buffer_[i].addSTREvent(vertex_info_buffer_[i].last_event);
+    }
+    ++tick;
 }
 
 void STREngineCPU::computeSeenSTREvents(const STREvent& observer) {
-    // seen STREvents
+    for (int i = 0; i < kMaxSTREventCnt; ++i)
+        seen_events_buffer_[i] = trajectory_buffer_[i].get_seen_event(observer);
 }
