@@ -14,13 +14,14 @@ struct STREvent {
     float self_time;
 };
 
+
 class STRTrajectory {
 public:
-    STRTrajectory(size_t map_diameter, size_t ticks_per_sec);
+    STRTrajectory(float map_diameter, int ticks_per_sec, int skips_num);
 
     void addSTREvent(const STREvent& event);
 
-//    STREvent get_event(float ifr_time);
+//    STREvent get_event(float IFR_time);
     STREvent get_seen_event(const STREvent& observer) const;
 
     ~STRTrajectory();

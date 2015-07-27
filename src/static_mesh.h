@@ -18,11 +18,18 @@ struct StaticVertex {
     glm::vec3 normal;
 
     StaticVertex(const glm::vec3& pos, const glm::vec2& UV, const glm::vec3& norm) {
-        position = pos;
+        position    = pos;
         UV_position = UV;
-        normal = norm;
+        normal      = norm;
     }
 };
+
+
+struct Eye {
+    int homo_index;
+    int vertex_index;
+};
+
 
 class StaticMesh {
 public:
@@ -39,9 +46,16 @@ private:
 
         GLuint VBO;
         GLuint IBO;
+
+        friend struct STRBody;
+        friend class STREngineCPU;
     };
 
+    void findEye();
+
     friend struct STRBody;
+    friend class STREngineCPU;
 
     std::vector<HomogeneousStaticMesh> homo_meshes_;
+    Eye eye_;
 };

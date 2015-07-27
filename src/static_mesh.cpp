@@ -5,7 +5,7 @@ bool StaticMesh::loadFromFile(const std::string& file_name) {
 
     Assimp::Importer Importer;
     const aiScene* scene = Importer.ReadFile(file_name.c_str(),
-                                    aiProcess_Triangulate | aiProcess_GenSmoothNormals|
+                                    aiProcess_Triangulate | aiProcess_GenSmoothNormals |
                                     aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices | 
                                     aiProcess_ValidateDataStructure);
 
@@ -21,7 +21,7 @@ bool StaticMesh::loadFromFile(const std::string& file_name) {
 
         const aiVector3D zero(0.0f, 0.0f, 0.0f);
         for (int i = 0; i < static_cast<int>(ai_mesh->mNumVertices); ++i){
-            const aiVector3D* pos = &(ai_mesh->mVertices[i]);
+            const aiVector3D* pos    = &(ai_mesh->mVertices[i]);
             const aiVector3D* normal = &(ai_mesh->mNormals[i]);
             const aiVector3D* uv_pos = &zero;
 
@@ -53,7 +53,24 @@ bool StaticMesh::loadFromFile(const std::string& file_name) {
                     &(homo_meshes_[mesh_index].indices[0][0]), GL_STATIC_DRAW);
     }
 
+    findEye();
+
     return true;
+}
+
+void StaticMesh::findEye() {
+    eye_.homo_index = 0;
+    eye_.vertex_index = 0;
+    for (int i = 0; i < static_cast<int>(homo_meshes_.size()); ++i) {
+        for (int j = 0; j < static_cast<int>(homo_meshes_[i].vertices.size()); ++j) {
+            if (glm::length(homo_meshes_[i].vertices[j].position) < 
+                glm::length(homo_meshes_[eye_.homo_index].vertices[eye_.vertex_index].position)) {
+
+                eye_.homo_index = i;
+                eye_.vertex_index = j;
+            }
+        }
+    }
 }
 
 void StaticMesh::render() const {

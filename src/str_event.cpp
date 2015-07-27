@@ -25,7 +25,9 @@ bool STREvent::isInPast(const STREvent& event) const {
 }
 
 
-STRTrajectory::STRTrajectory(size_t map_diameter, size_t ticks_per_sec): kSize(map_diameter * ticks_per_sec) {
+STRTrajectory::STRTrajectory(float map_diameter, int ticks_per_sec, int skips_num): 
+    kSize((static_cast<int>(ceil(map_diameter)) * ticks_per_sec + skips_num) / (1 + skips_num)) 
+{
     trajectory_ = (STREvent*)(malloc(kSize * sizeof(STREvent)));
     first_ = -1;
 }
