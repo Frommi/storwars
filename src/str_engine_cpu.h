@@ -24,7 +24,8 @@ public:
     virtual void computeSeenSTREvents(const STREvent& observer);
 
 private:
-    virtual void addVertexToInit(int index, const VertexInfoToInit& vertex);
+    virtual void addVertexToInit(const VertexInfoToInit& vertex);
+    virtual void addBodyToInit(const BodyInfoToInit& body);
     virtual void initVertices();
     virtual void initBodies();
 
@@ -41,4 +42,5 @@ private:
     std::vector<BodyInfo> body_info_buffer_;
     std::vector<VertexInfoToInit> vertices_to_init_buffer;
     std::vector<BodyInfoToInit> bodies_to_init_buffer;
+    std::vector<STREvent> seen_events_buffer;
 };

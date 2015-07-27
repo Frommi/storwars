@@ -10,6 +10,8 @@
 #include "str_event.h"
 #include "static_mesh.h"
 
+#define VERTEX_ACTIVE 1 << 0;
+
 struct VertexInfo {
     VertexInfo():
         flags(0),
@@ -68,11 +70,12 @@ public:
     #define INVALID_EYE_INDEX -1
 
     STRBody():
-        mesh_(NULL),
+        mesh_(nullptr),
         eye_direction_(0.0f, 0.0f, 0.0f, 1.0f),
         eye_force_(0.0f),
         frame_indices_(),
-        eye_frame_index_(INVALID_EYE_INDEX)
+        eye_frame_index_(INVALID_EYE_INDEX),
+        body_info_index_(0)
     {}
 
     void initSTRBody(const StaticMesh& init_mesh) {
@@ -102,6 +105,7 @@ private:
 
     std::vector<int> frame_indices_;
     int eye_frame_index_;
+    int body_info_index_;
 
     friend class STREngine;
     friend class STREngineCPU;
@@ -127,12 +131,17 @@ public:
     virtual void computeSeenSTREvents(const STREvent& observer) = 0;
 
 private:
-    virtual void addVertexToInit(int index, const VertexInfoToInit& vertex) = 0;
+    virtual void addVertexToInit(const VertexInfoToInit& vertex) = 0;
+    virtual void addBodyToInit(const BodyInfoToInit& body) = 0;
     virtual void initVertices() = 0;
     virtual void initBodies() = 0;
 
+    std::vector<int> free_vertex_indicies_;
+    std::vector<int> free_body_indices_;
+
     std::vector<STRBody> bodies_;
-    std::vector<VertexInfo> last_frame_;
+    std::vector<VertexInfo> last_vertex_frame_;
+    std::vector<BodyInfo> last_body_frame_;
 
     std::vector<VertexInfoToInit> vertices_to_init_;
     std::vector<BodyInfoToInit> bodies_to_init_;

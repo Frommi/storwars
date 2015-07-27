@@ -10,7 +10,15 @@ STREngineCPU::STREngineCPU(int ticks_per_sec, float map_diameter, int skips_num,
 {}
 
 void STREngineCPU::initEngine() {
-    last_frame_.resize(kMaxSTREventCnt);
+    free_vertex_indicies_.resize(kMaxSTREventCnt);
+    for (int i = 0; i < kMaxSTREventCnt; ++i)
+        free_vertex_indicies_[i] = i;
+
+    free_body_indices_.resize(kMaxSTRBodiesCnt);
+    for (int i = 0; i < kMaxSTRBodiesCnt; ++i)
+        free_body_indices_[i] = i;
+
+    last_vertex_frame_.resize(kMaxSTREventCnt);
     bodies_.resize(kMaxSTRBodiesCnt);
     vertex_info_buffer_.resize(kMaxSTREventCnt);
     body_info_buffer_.resize(kMaxSTRBodiesCnt);
@@ -26,17 +34,37 @@ STRBody* STREngineCPU::addSTRBody(const StaticMesh& body_mesh, const glm::vec3& 
                                   const glm::quat& eye_direction, const glm::vec3& eye_force) {
     bodies_.push_back(STRBody(body_mesh));
     const STRBody& body = bodies_.back();
+    glm::mat4 rotate = glm::mat4_cast(body.eye_direction_);
+    body.body_info_index_ = free_body_indices_.back();
+    free_body_indices_.pop_back();
 
     int frame_index = 0;
     for (int homo_index = 0; homo_index < body.mesh_->homo_meshes_.size(); ++homo_index) {
         for (int vertex_index = 0; vertex_index < body.mesh_->homo_meshes_[homo_index].vertices.size(); ++vertex_index) {
-            if (free_indicies_.size() == 0) {
+            if (free_vertex_indicies_.size() == 0) {
                 fprintf(stderr, "Out of free events!\n");
                 exit(EXIT_FAILURE);
             }
 
-            body.frame_indices_[frame_index] = free_indicies_.back();
-            free_indicies_.pop_back();
+            body.frame_indices_[frame_index] = free_vertex_indicies_.back();
+            free_vertex_indicies_.pop_back();
+
+            const STREvent event = STREvent(
+                body.eye_.event.position + rotate * body.mesh_->homo_meshes_[i].vertices[j].position,
+                body.eye_.event.IFR_time,
+                body.eye_.event.impulse,
+                body.eye_.event.self_time
+            );
+
+            const VertexInfoToInit vertex();
+            vertex.vertex_info.flags |= VERTEX_ACTIVE;
+            vertex.vertex_info.body_index = body.body_info_index_;
+            vertex.vertex_info.last_event = event;
+            vertex.vertex_info.force = eye_force;
+            vertex.vertex_info.mesh_position = body.mesh_->homo_meshes_[homo_index].vertices[vertex_index].position;
+            vertex.where_to_init = body.frame_indices_[frame_index];
+
+            addVertexToInit(vertex);
 
             if (&(body.mesh_->homo_meshes_[homo_index].vertices[vertex_index]) == body.eye_.location)
                 body.eye_index_ = frame_index;
@@ -45,49 +73,51 @@ STRBody* STREngineCPU::addSTRBody(const StaticMesh& body_mesh, const glm::vec3& 
         }
     }
 
-    glm::mat4 rotate = glm::mat4_cast(body.get_eye().direction);
-    int index = 0;
-    for (int i = 0; i < static_cast<int>(body.mesh_->homo_meshes_.size()); ++i) {
-        for (int j = 0; j < static_cast<int>(body.mesh_->homo_meshes_[i].size()); ++j) {
-            const STREvent value = STREvent(
-                body.eye_.event.position + rotate * body.mesh_->homo_meshes_[i].vertices[j].position,
-                body.eye_.event.IFR_time,
-                body.eye_.event.impulse,
-                body.eye_.event.self_time
-            );
-
-            addSTREventToInit(body.frame_indices_[index++], value, body.eye_index_);
-        }
-    }
-
     return &body;
 }
 
-void GameFrame::removeSTRBody(STRBody& body) {
-    for (int i = 0; i < static_cast<int>(body.frame_indices_.size()); ++i) {
-        free_indicies_.push_back(body.frame_indices_[i]);
-    }
+void STREngineCPU::updateEye(STRBody* body, const glm::quat& eye_direction, const glm::vec3& eye_force) {
+    body->eye_direction_ = eye_direction;
+    body->eye_force_ = eye_force;
+
+    vertex_info = last_vertex_frame_[body->eye_frame_index_];
+    vertex_info.force = eye_force;
+
+    body_info = last_body_frame_[vertex_info.body_index];
+    body_info.eye_rotation = glm::mat4_cast(eye_direction);
+
+    addBodyToInit(body_info);
+    addVertexToInit(vertex_info);
 }
 
-void STREngineCPU::addSTREventToInit(int index, const STREvent& value, int eye_index) {
-    event_to_init_.push_back(value);
-    where_to_init_.push_back(index);
-    eye_index_to_init_.push_back(eye_index);
+void STREngineCPU::removeSTRBody(STRBody* body) {
+    for (int i = 0; i < static_cast<int>(body->frame_indices_.size()); ++i)
+        free_vertex_indicies_.push_back(body->frame_indices_[i]);
+
+    free_body_indices_.push_back(body->body_info_index_);
+    body->frame_indices_.clear();
 }
 
-void STREngineCPU::initSTREvents() {
-    for (int i = 0; i > static_cast<int>(event_to_init_.size()); ++i) {
-        last_frame_.events_[where_to_init_[i]] = event_to_init_[i];
-        eye_index_[where_to_init_[i]] = eye_index_to_init_[i];
-    }
-    
-    event_to_init_.clear();
-    where_to_init_.clear();
-    eye_index_to_init_.clear();
+void STREngineCPU::addVertexToInit(const VertexInfoToInit& vertex) {
+    vertices_to_init_.push_back(vertex);
 }
 
-void STREngineCPU::removeSTRBody(STRBody& body) {
-    last_frame_.removeSTRBody(body);
+void STREngineCPU::addBodyToInit(const BodyInfoToInit& body) {
+    bodies_to_init_.push_back(body);
+}
+
+void STREngineCPU::initVertices() {
+    for (int i = 0; i > static_cast<int>(vertices_to_init_.size()); ++i)
+        vertex_info_buffer_[vertices_to_init_[i].where_to_init] = vertices_to_init_.vertex_info;
+
+    vertices_to_init_.clear();
+}
+
+void STREngineCPU::initBodies() {
+    for (int i = 0; i > static_cast<int>(bodies_to_init_.size()); ++i)
+        body_info_buffer_[bodies_to_init_[i].where_to_init] = bodies_to_init_.body_info;
+
+    bodies_to_init_.clear();
 }
 
 void STREngineCPU::findCollisions() {
@@ -95,9 +125,7 @@ void STREngineCPU::findCollisions() {
 }
 
 void STREngineCPU::computeForces() {
-    for (int i = 0; i < kMaxSTREventCnt; ++i) {
-        forces_buffer_[i] = 
-    }
+
 }
 
 void STREngineCPU::computeSTREvents() {
