@@ -4,8 +4,8 @@
 #include <stdio.h>
 
 void Camera::rotatePitchYawRoll(float pitch, float yaw, float roll) {
-    pitch /= 1000.0f;  // Temporal magic constant -- mouse sensitivity
-    yaw /= 1000.0f;    // Temporal magic constant -- mouse sensitivity
+    pitch /= 300.0f;  // Temporal magic constant -- mouse sensitivity
+    yaw /= 300.0f;    // Temporal magic constant -- mouse sensitivity
     roll /= 1000.0f;   // Temporal magic constant -- mouse sensitivity
 
     glm::quat rotation = glm::quat(glm::vec3(pitch, yaw, roll));
@@ -60,9 +60,9 @@ void WorldPipeline::set_projection(const GLFWwindow* window) {
     int width, height;
     glfwGetFramebufferSize(const_cast<GLFWwindow*>(window), &width, &height);
 
-    float FOV = 71.0f;     // magic constant -- field of view
-    float zNear = 0.1f;    // magic constant -- near plane
-    float zFar = 1000.0f;  // magic constant -- far plane
+    float FOV = 71.0f;       // magic constant -- field of view
+    float zNear = 0.1f;      // magic constant -- near plane
+    float zFar = 100000.0f;  // magic constant -- far plane
 
     projection_ = glm::mat4(1.0f);
     float ar = static_cast<float>(width) / static_cast<float>(height);
@@ -78,4 +78,12 @@ void WorldPipeline::set_projection(const GLFWwindow* window) {
 
 glm::mat4 WorldPipeline::get_WVP_matrix() {
     return scale_ * rotate_ * move_ * camera_move_ * camera_rotate_ * projection_;
+}
+
+glm::mat4 WorldPipeline::get_W_matrix() {
+    return scale_ * rotate_ * move_;
+}
+
+glm::mat4 WorldPipeline::get_VP_matrix() {
+    return camera_rotate_ * projection_;
 }

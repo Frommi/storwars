@@ -9,6 +9,10 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+#ifndef M_PI
+#define M_PI           3.14159265358979323846
+#endif
+
 class Camera {
 public:
     Camera(const glm::vec3& pos):
@@ -53,6 +57,8 @@ public:
     void set_projection(const GLFWwindow* window);
     
     glm::mat4 get_WVP_matrix();
+    glm::mat4 get_W_matrix();
+	glm::mat4 get_VP_matrix();
 
 private:
     glm::mat4 scale_;

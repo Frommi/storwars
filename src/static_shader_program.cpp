@@ -13,9 +13,20 @@ bool StaticShaderProgram::initShaderProgram() {
     if (!this->compileShaderProgram())
         return false;
 
-    WVP_matrix_uniform_ = getUniformLocation("u_WVP");
+    W_matrix_uniform_    	 = getUniformLocation("u_W");
+    VP_matrix_uniform_   	 = getUniformLocation("u_VP");
 
-    if (WVP_matrix_uniform_ == INVALID_LOCATION) {
+    obs_pos_uniform_     	 = getUniformLocation("u_ObsPos");
+    obs_impulse_uniform_ 	 = getUniformLocation("u_ObsImpulse");
+
+    diffuse_texture_uniform_ = getUniformLocation("diffuseTexture");
+
+    if (W_matrix_uniform_        == INVALID_LOCATION ||
+    	VP_matrix_uniform_       == INVALID_LOCATION ||
+    	obs_pos_uniform_         == INVALID_LOCATION ||
+    	obs_impulse_uniform_     == INVALID_LOCATION ||
+    	diffuse_texture_uniform_ == INVALID_LOCATION) {
+
         fprintf(stderr, "invalid uniform location\n");
         return false;
     }

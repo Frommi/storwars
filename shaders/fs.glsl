@@ -1,6 +1,10 @@
 #version 430
 
 in vec3 normal;
+in vec2 uv;
+
+uniform sampler2D diffuseTexture;
+
 out vec4 color;
 
 void main() {
@@ -8,5 +12,8 @@ void main() {
 
     float cosTheta = clamp(dot(gLightDirection, normal), 0, 1);
 
-    color = vec4(0.2 + cosTheta * 0.5, 0.0, 0.0, 1.0);
+    vec3 ambientColor = vec3(0.2, 0.2, 0.2);
+    vec3 diffuseColor = vec3(cosTheta, cosTheta, cosTheta) * 0.5;
+
+    color = vec4(texture2D(diffuseTexture, uv.xy) * (ambientColor + diffuseColor), 1.0);
 }

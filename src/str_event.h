@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdlib>
+
 #include <glm/glm.hpp>
 
 struct STREvent {

@@ -9,6 +9,8 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
+#include "texture.h"
+
 #include <vector>
 #include <string>
 
@@ -44,6 +46,8 @@ private:
         std::vector<StaticVertex> vertices;
         std::vector<glm::uvec3> indices;
 
+	    int material_index_;
+
         GLuint VBO;
         GLuint IBO;
 
@@ -57,5 +61,6 @@ private:
     friend class STREngineCPU;
 
     std::vector<HomogeneousStaticMesh> homo_meshes_;
+    std::vector<Texture> textures_;
     Eye eye_;
 };
