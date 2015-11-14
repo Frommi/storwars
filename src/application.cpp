@@ -77,7 +77,6 @@ void Application::run() {  // Temporary
 
         glm::vec3 v = p / static_cast<float>(sqrt(1 + glm::dot(p, p)));
         camera.updatePositionBy(v * dt);
-    	printf("v = %f * c, gamma = %f", glm::length(v), static_cast<float>(sqrt(1 + glm::dot(p, p))));
 
         float roll = 0.0f;
         if (this->isKeyboardKeyPressed(GLFW_KEY_Q)) 
