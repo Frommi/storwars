@@ -25,6 +25,7 @@ public:
 
 //    STREvent get_event(float IFR_time);
     STREvent get_seen_event(const STREvent& observer) const;
+//    STREvent get_seen_event(const STREvent& observer, int pref_tick) const;
 
     ~STRTrajectory();
 

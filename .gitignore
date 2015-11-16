@@ -9,6 +9,7 @@
 *.toc
 *.jpg
 *.vrb
+*.dll
 debug/
 bin/
 obj/

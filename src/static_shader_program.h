@@ -29,6 +29,10 @@ public:
         glUniform3fv(obs_impulse_uniform_, 1, (const GLfloat*) &(obs_impulse[0]));
     }
 
+    inline void set_inverse_g_uniform(float inverse_g) {
+    	glUniform1f(inverse_g_uniform_, inverse_g);
+    }
+
     inline void set_diffuse_texture_uniform(int index) {
     	glUniform1i(diffuse_texture_uniform_, index);
     }
@@ -39,6 +43,7 @@ private:
 
     GLuint obs_pos_uniform_;
     GLuint obs_impulse_uniform_;
+    GLuint inverse_g_uniform_;
     
     GLuint diffuse_texture_uniform_;
 };

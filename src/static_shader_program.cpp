@@ -7,6 +7,15 @@ bool StaticShaderProgram::initShaderProgram() {
     if (!this->addShader("shaders/vs.glsl", GL_VERTEX_SHADER)) 
         return false;
 
+    if (!this->addShader("shaders/tcs.glsl", GL_TESS_CONTROL_SHADER)) 
+        return false;
+
+    if (!this->addShader("shaders/tes.glsl", GL_TESS_EVALUATION_SHADER)) 
+        return false;
+
+    if (!this->addShader("shaders/gs.glsl", GL_GEOMETRY_SHADER)) 
+        return false;
+
     if (!this->addShader("shaders/fs.glsl", GL_FRAGMENT_SHADER)) 
         return false;
 
@@ -18,6 +27,7 @@ bool StaticShaderProgram::initShaderProgram() {
 
     obs_pos_uniform_     	 = getUniformLocation("u_ObsPos");
     obs_impulse_uniform_ 	 = getUniformLocation("u_ObsImpulse");
+    inverse_g_uniform_       = getUniformLocation("u_InverseG");
 
     diffuse_texture_uniform_ = getUniformLocation("diffuseTexture");
 
@@ -25,7 +35,8 @@ bool StaticShaderProgram::initShaderProgram() {
     	VP_matrix_uniform_       == INVALID_LOCATION ||
     	obs_pos_uniform_         == INVALID_LOCATION ||
     	obs_impulse_uniform_     == INVALID_LOCATION ||
-    	diffuse_texture_uniform_ == INVALID_LOCATION) {
+    	diffuse_texture_uniform_ == INVALID_LOCATION ||
+    	inverse_g_uniform_       == INVALID_LOCATION) {
 
         fprintf(stderr, "invalid uniform location\n");
         return false;

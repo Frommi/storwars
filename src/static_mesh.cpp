@@ -115,7 +115,7 @@ void StaticMesh::render() const {
         textures_[homo_meshes_[i].material_index_].bindToUnit(GL_TEXTURE0);
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, homo_meshes_[i].IBO);
-        glDrawElements(GL_TRIANGLES, homo_meshes_[i].indices.size() * 3, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_PATCHES, homo_meshes_[i].indices.size() * 3, GL_UNSIGNED_INT, 0);
     }
 
     glDisableVertexAttribArray(2);

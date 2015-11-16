@@ -14,6 +14,7 @@
 #include "input_handler.h"
 #include "static_shader_program.h"
 #include "static_mesh.h"
+#include "world_pipeline.h"
 
 class Application : public InputHandler {
 public:
@@ -29,4 +30,15 @@ private:
     }
 
     GLFWwindow* window_;
+
+    void updateInput();
+    void tick(float dt);
+    void render();
+
+    Camera* camera_;
+    glm::vec3 p_;
+    glm::vec3 f_;
+    StaticMesh* static_mesh_;
+    StaticShaderProgram* static_shader_program_;
+    float roll_;
 };
