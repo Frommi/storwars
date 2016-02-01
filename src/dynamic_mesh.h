@@ -15,26 +15,40 @@
 #include <vector>
 #include <string>
 
-struct StaticVertex {
+struct DynamicVertex {
     glm::vec3 position;
     glm::vec2 UV_position;
     glm::vec3 normal;
-    
-    StaticVertex(const glm::vec3& pos, const glm::vec2& UV, const glm::vec3& norm) {
+    glm::uvec4 boneIDs;
+    glm::vec4 bone_weights;
+
+    DynamicVertex(const glm::vec3& pos, const glm::vec2& UV, const glm::vec3& norm) {
         position     = pos;
         UV_position  = UV;
         normal       = norm;
+        boneIDs      = glm::uvec4(0);
+        bone_weights = glm::vec4(0.0f);
     }
 };
 
 
-class StaticMesh {
+struct Eye {
+    int homo_index;
+    int vertex_index;
+};
+
+
+class DynamicMesh {
 public:
-    StaticMesh() {}
+    DynamicMesh() {}
 
     bool loadFromFile(const std::string& file_path, const std::string& file_name);
 
     void render() const;
+
+    float eye_dist() const {
+        return glm::length(homo_meshes_[eye_.homo_index].vertices[eye_.vertex_index].position);
+    }
 
 private:
     void loadMaterials(const std::string& file_path, const aiScene* scene);
@@ -42,11 +56,13 @@ private:
     void loadFaces(const aiMesh* ai_mesh, int mesh_index);
     void initBuffers();
 
-    struct HomogeneousStaticMesh {
-        std::vector<StaticVertex> vertices;
+    void loadBones(const aiMesh* ai_mesh, int mesh_index);
+
+    struct HomogeneousDynamicMesh {
+        std::vector<DynamicVertex> vertices;
         std::vector<glm::uvec3> indices;
 
-	    int material_index;
+        int material_index;
 
         GLuint VBO;
         GLuint IBO;
@@ -54,8 +70,11 @@ private:
         friend class STRBody;
     };
 
+    void findEye();
+
     friend class STRBody;
 
     std::vector<HomogeneousStaticMesh> homo_meshes_;
     std::vector<Texture> textures_;
+    Eye eye_;
 };

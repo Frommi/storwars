@@ -1,5 +1,6 @@
 #pragma once
 
+#define GLM_SWIZZLE_XYZW
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/quaternion.hpp>

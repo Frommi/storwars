@@ -3,6 +3,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+#define GLM_SWIZZLE_XYZW
 #include <glm/glm.hpp>
 
 #include <string.h>

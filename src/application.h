@@ -3,8 +3,10 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+#define GLM_SWIZZLE_XYZW
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 #include <cmath>
 #include <cstdlib>
@@ -32,8 +34,8 @@ private:
     GLFWwindow* window_;
 
     void updateInput();
-    void tick(float dt);
-    void render();
+    void tick(float dt, float& ifr_time);
+    void render(float ifr_time);
 
     Camera* camera_;
     glm::vec3 p_;
