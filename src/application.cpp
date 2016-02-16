@@ -134,8 +134,8 @@ void Application::run() {  // Temporary
 
     static_mesh_ = new StaticMesh();
     //static_mesh_->loadFromFile("models/sphere.obj");
-    //static_mesh_->loadFromFile("models/city/", "city.obj");
-    static_mesh_->loadFromFile("models/island/", "island.obj");
+    static_mesh_->loadFromFile("models/city/", "city.obj");
+    //static_mesh_->loadFromFile("models/island/", "island.obj");
     //static_mesh_->loadFromFile("models/sphere/sphere/", "sphere.obj");
     //static_mesh_->loadFromFile("models/big_sphere/", "sphere.obj");
     //static_mesh_->loadFromFile("models/monkey/", "monkey.obj");

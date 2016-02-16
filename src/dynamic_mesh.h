@@ -16,6 +16,8 @@
 #include <string>
 
 struct DynamicVertex {
+    #define EPS 1e-9;
+
     glm::vec3 position;
     glm::vec2 UV_position;
     glm::vec3 normal;
@@ -27,12 +29,17 @@ struct DynamicVertex {
         normal      = norm;
         nodeID      = 0;
     }
+
+    void addBone();
 };
 
 
-struct Eye {
-    int homo_index;
-    int vertex_index;
+struct Bone {
+    std::string name;
+
+    glm::vec3 position;
+    glm::vec3 scale;
+    glm::quat rotation;
 };
 
 
@@ -75,5 +82,7 @@ private:
 
     std::vector<HomogeneousDynamicMesh> homo_meshes_;
     std::vector<Texture> textures_;
-    Eye eye_;
+
+    std::vector<Bone> bones_;
+    std::unordered_map<std::string, uint> bone_name_map_;
 };

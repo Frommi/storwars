@@ -25,13 +25,16 @@ void StaticMesh::loadMaterials(const std::string& file_path, const aiScene* scen
 }
 
 void StaticMesh::loadVetices(const aiMesh* ai_mesh, int mesh_index) {
+    homo_meshes_[mesh_index].vertex_offset = vertices_.size();
+    homo_meshes_[mesh_index].vertex_number = ai_mesh->mNumVertices;
+
     const aiVector3D zero(0.0f, 0.0f, 0.0f);
     for (int i = 0; i < static_cast<int>(ai_mesh->mNumVertices); ++i) {
         const aiVector3D* pos    = &(ai_mesh->mVertices[i]);
         const aiVector3D* normal = &(ai_mesh->mNormals[i]);
         const aiVector3D* uv_pos = ai_mesh->HasTextureCoords(0) ? &(ai_mesh->mTextureCoords[0][i]) : &zero;
-
-        homo_meshes_[mesh_index].vertices.push_back(StaticVertex(
+        
+        vertices_.push_back(StaticVertex(
             glm::vec3(pos->x, pos->y, pos->z),
             glm::vec2(uv_pos->x, uv_pos->y),
             glm::vec3(normal->x, normal->y, normal->z)
@@ -52,16 +55,15 @@ void StaticMesh::loadFaces(const aiMesh* ai_mesh, int mesh_index) {
 }
 
 void StaticMesh::initBuffers() {
-    for (int mesh_index = 0; mesh_index < static_cast<int>(homo_meshes_.size()); ++mesh_index) {
-        glGenBuffers(1, &(homo_meshes_[mesh_index].VBO));
-        glBindBuffer(GL_ARRAY_BUFFER, homo_meshes_[mesh_index].VBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(StaticVertex) * homo_meshes_[mesh_index].vertices.size(),
-                    &(homo_meshes_[mesh_index].vertices[0].position[0]), GL_STATIC_DRAW);
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(StaticVertex) * vertices_.size(), &vertices_.front(), GL_STATIC_DRAW);
 
+    for (int mesh_index = 0; mesh_index < static_cast<int>(homo_meshes_.size()); ++mesh_index) {
         glGenBuffers(1, &(homo_meshes_[mesh_index].IBO));
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, homo_meshes_[mesh_index].IBO);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(glm::uvec3) * homo_meshes_[mesh_index].indices.size(),
-                    &(homo_meshes_[mesh_index].indices[0][0]), GL_STATIC_DRAW);
+                    &(homo_meshes_[mesh_index].indices.front()), GL_STATIC_DRAW);
     }
 }
 
@@ -100,17 +102,17 @@ void StaticMesh::render() const {
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
     glEnableVertexAttribArray(2);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(StaticVertex), (const GLvoid*) 0);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(StaticVertex), (const GLvoid*) 12);
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(StaticVertex), (const GLvoid*) 20);
     
     for (int i = 0; i < static_cast<int>(homo_meshes_.size()); ++i) {
-        glBindBuffer(GL_ARRAY_BUFFER, homo_meshes_[i].VBO);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(StaticVertex), (const GLvoid*) 0);
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(StaticVertex), (const GLvoid*) 12);
-        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(StaticVertex), (const GLvoid*) 20);
-
         textures_[homo_meshes_[i].material_index].bindToUnit(GL_TEXTURE0);
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, homo_meshes_[i].IBO);
-        glDrawElements(GL_PATCHES, homo_meshes_[i].indices.size() * 3, GL_UNSIGNED_INT, 0);
+        glDrawElementsBaseVertex(GL_PATCHES, homo_meshes_[i].indices.size() * 3, GL_UNSIGNED_INT, 0, homo_meshes_[i].vertex_offset);
     }
 
     glDisableVertexAttribArray(2);

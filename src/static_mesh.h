@@ -43,14 +43,21 @@ private:
     void initBuffers();
 
     struct HomogeneousStaticMesh {
-        std::vector<StaticVertex> vertices;
-        std::vector<glm::uvec3> indices;
+        unsigned int vertex_offset;
+        unsigned int vertex_number;
 
 	    int material_index;
 
-        GLuint VBO;
         GLuint IBO;
+        std::vector<glm::uvec3> indices;
+
+        friend class STRBody;
     };
+
+    friend class STRBody;
+
+    GLuint VBO;
+    std::vector<StaticVertex> vertices_;
 
     std::vector<HomogeneousStaticMesh> homo_meshes_;
     std::vector<Texture> textures_;
