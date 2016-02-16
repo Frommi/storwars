@@ -9,7 +9,7 @@ CXX = g++
 
 ifeq ($(OS),Windows_NT)
 	#Windows stuff
-	CXXFLAGS = -O2 -Wall -pedantic -Wextra -std=c++11 -lglew32 -lglfw3 -lgdi32 -lSOIL -lopengl32 -lassimp
+	CXXFLAGS = -O2 -Wall -pedantic -Wextra -std=c++11 -lglew32 -DGLEW_STATIC -lglfw3 -lgdi32 -lSOIL -lopengl32 -lassimp
 else
 	#Linux stuff
 	CXXFLAGS = -O2 -Wall -pedantic -Wextra -std=c++11 -lGLEW -lglfw3 -lGL -lX11 -lXi -lXrandr -lXxf86vm -lXinerama -lXcursor -lrt -lm -pthread -lassimp

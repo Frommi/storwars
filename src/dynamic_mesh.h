@@ -19,15 +19,13 @@ struct DynamicVertex {
     glm::vec3 position;
     glm::vec2 UV_position;
     glm::vec3 normal;
-    glm::uvec4 boneIDs;
-    glm::vec4 bone_weights;
+    uint nodeID;
 
     DynamicVertex(const glm::vec3& pos, const glm::vec2& UV, const glm::vec3& norm) {
-        position     = pos;
-        UV_position  = UV;
-        normal       = norm;
-        boneIDs      = glm::uvec4(0);
-        bone_weights = glm::vec4(0.0f);
+        position    = pos;
+        UV_position = UV;
+        normal      = norm;
+        nodeID      = 0;
     }
 };
 
@@ -38,6 +36,12 @@ struct Eye {
 };
 
 
+struct DynamicNode {
+    glm::vec3 position;
+    glm::uvec4 edges;
+};
+
+
 class DynamicMesh {
 public:
     DynamicMesh() {}
@@ -45,10 +49,6 @@ public:
     bool loadFromFile(const std::string& file_path, const std::string& file_name);
 
     void render() const;
-
-    float eye_dist() const {
-        return glm::length(homo_meshes_[eye_.homo_index].vertices[eye_.vertex_index].position);
-    }
 
 private:
     void loadMaterials(const std::string& file_path, const aiScene* scene);
@@ -61,6 +61,7 @@ private:
     struct HomogeneousDynamicMesh {
         std::vector<DynamicVertex> vertices;
         std::vector<glm::uvec3> indices;
+        std::vector<DynamicNode> nodes;
 
         int material_index;
 
@@ -70,11 +71,9 @@ private:
         friend class STRBody;
     };
 
-    void findEye();
-
     friend class STRBody;
 
-    std::vector<HomogeneousStaticMesh> homo_meshes_;
+    std::vector<HomogeneousDynamicMesh> homo_meshes_;
     std::vector<Texture> textures_;
     Eye eye_;
 };

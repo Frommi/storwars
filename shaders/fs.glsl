@@ -22,7 +22,7 @@ float getWave(float l) {
 	float inv_g = inversesqrt(1 + dot(u_ObsImpulse, u_ObsImpulse));
 	float cosT = dot(u_ObsImpulse, fs_position) / (length(u_ObsImpulse) * length(fs_position));
 	cosT = clamp(-1.0, 1.0, cosT);
-	return l * (inv_g / (1.0 + u_ObsImpulse * cosT / inv_g));
+	return l * (inv_g / (1.0 + length(u_ObsImpulse) * cosT / inv_g));
 }
 
 vec3 rgbByWave(float l) {
@@ -60,7 +60,7 @@ void main() {
 //    			 rgbByWave(getWave(510.0)) * color.y +
 //    			 rgbByWave(getWave(475.0)) * color.z, 1.0);
     
-    //color = vec4(rgbByWave(getWave(575.0)), 1.0);
+//    color = vec4(rgbByWave(getWave(575.0)), 1.0);
 
     color *= amplify(d1, 40, -0.5) * amplify(d2, 60, -0.5); 
 }

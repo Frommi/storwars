@@ -50,11 +50,7 @@ private:
 
         GLuint VBO;
         GLuint IBO;
-
-        friend class STRBody;
     };
-
-    friend class STRBody;
 
     std::vector<HomogeneousStaticMesh> homo_meshes_;
     std::vector<Texture> textures_;
