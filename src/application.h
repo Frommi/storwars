@@ -9,6 +9,7 @@
 #include <glm/gtc/quaternion.hpp>
 
 #include <cmath>
+#include <algorithm>
 #include <cstdlib>
 #include <string>
 #include <cstring>
@@ -17,6 +18,9 @@
 #include "static_shader_program.h"
 #include "static_mesh.h"
 #include "world_pipeline.h"
+#include "voxel_generator.h"
+
+#include <noisepp/core/Noise.h>
 
 class Application : public InputHandler {
 public:

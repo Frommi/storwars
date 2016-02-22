@@ -1,6 +1,6 @@
 #version 430
 
-layout (vertices = 3) out;
+layout(vertices = 3) out;
 
 in vec3 tcs_position[];
 in vec2 tcs_UV[];
@@ -14,7 +14,8 @@ out vec3 tes_normal[];
 uniform vec3 u_ObsPos;
 
 float getTessLevel(float d, float l) {
-	return min(16, (l * 64.0) / (d + 0.2));
+	//return 1;
+    return min(16, (l * 64.0) / (d + 0.2));
 }
 
 void main() {

@@ -51,10 +51,10 @@ private:
         GLuint IBO;
         std::vector<glm::uvec3> indices;
 
-        friend class STRBody;
+        friend class VoxelGenerator;
     };
 
-    friend class STRBody;
+    friend class VoxelGenerator;
 
     GLuint VBO;
     std::vector<StaticVertex> vertices_;

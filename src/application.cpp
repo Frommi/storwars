@@ -1,5 +1,52 @@
 #include "application.h"
 
+const int size = 128;
+
+unsigned int seed = 239017;
+
+noisepp::PerlinModule perlin;
+noisepp::TurbulenceModule turbulence;
+
+noisepp::Pipeline3D* noise_pipeline;
+noisepp::ElementID id;
+noisepp::PipelineElement3D* element;
+noisepp::PipelineElement3D* turbulence_element;
+noisepp::Cache* cache;
+
+float getFrame(float x, float a, float b) {
+    return std::exp(-std::min(x - a, b - x) * 100.0f) * 3.0f;
+}
+
+float planet1(const glm::vec3& pos) {
+    glm::vec3 p = pos - glm::vec3(0.5f);
+    p = p + glm::normalize(p) * std::sin(glm::length(p) * 22.0f) / 25.0f;
+
+    float noise = element->getValue(p.x, p.y, p.z, cache);
+    noise *= 1.0 + std::sin(glm::length(p) * 25.0f);
+    float frame = getFrame(pos.x, 0.0f, 1.0f) + getFrame(pos.y, 0.0f, 1.0f) + getFrame(pos.z, 0.0f, 1.0f);
+//    float frame = 0;
+    float sphere = (glm::distance(pos, glm::vec3(0.5f)) - 0.4f) * 2.0f;
+    //float sphere = 0;
+    float result = sphere + noise + frame;
+    //noise_pipeline->cleanCache(cache);
+    return result;
+}
+
+float planet2(const glm::vec3& pos) {
+    glm::vec3 p = pos - glm::vec3(0.5f);
+    p = p - glm::normalize(p) * std::sin(glm::length(p) * 22.0f) / 25.0f;
+
+    float noise = element->getValue(p.x, p.y, p.z, cache);
+    noise *= 1.0 + std::sin(glm::length(p) * 25.0f);
+    float frame = getFrame(pos.x, 0.0f, 1.0f) + getFrame(pos.y, 0.0f, 1.0f) + getFrame(pos.z, 0.0f, 1.0f);
+//    float frame = 0;
+    float sphere = (glm::distance(pos, glm::vec3(0.5f)) - 0.4f) * 4.0f;
+    //float sphere = 0;
+    float result = sphere + noise + frame;
+    //noise_pipeline->cleanCache(cache);
+    return result;
+}
+
 Application::Application() {}
 
 void Application::initApp() {
@@ -37,8 +84,8 @@ void Application::initApp() {
     fprintf(stderr, "%d x %d\n", a, b);
 
     GLint c;
-    glGetIntegerv(GL_MAX_COMPUTE_UNIFORM_COMPONENTS, &c);
-    fprintf(stderr, "uniform size (in vec1) = %d\n", c);
+    glGetIntegerv(GL_MAX_ARRAY_TEXTURE_LAYERS, &c);
+    fprintf(stderr, "texture array max size = %d\n", c);
 
     this->initInputHandler(window_);
 }
@@ -77,6 +124,37 @@ void Application::updateInput() {
 
     if (this->isKeyboardKeyPressed(GLFW_KEY_E)) 
         roll_ -= 0.1f;
+
+    if (this->isKeyboardKeyPressed(GLFW_KEY_R)) {
+        seed = seed * 239 + 179;
+        seed %= 1000003;
+
+        noise_pipeline->freeCache(cache);
+        cache = 0;
+        delete noise_pipeline;
+        noise_pipeline = 0;
+
+        perlin.setFrequency(7.0f);
+        perlin.setOctaveCount(4);
+        perlin.setSeed(seed);
+        perlin.setScale(1.0f);
+
+        turbulence.setFrequency(1.3f);
+        turbulence.setSeed(seed * 13 + 17);
+        turbulence.setPower(0.3f);
+        turbulence.setRoughness(3);
+        turbulence.setSourceModule(0, perlin);
+
+        noise_pipeline = new noisepp::Pipeline3D;
+        id = turbulence.addToPipeline(noise_pipeline);
+        element = noise_pipeline->getElement(id);
+        turbulence_element = noise_pipeline->getElementPtr(turbulence);
+        cache = noise_pipeline->createCache();
+
+        VoxelGenerator* vg = new VoxelGenerator;
+        static_mesh_ = vg->generateMesh(glm::ivec3(size), sphere_density);
+        delete vg;
+    }
 }
 
 void Application::tick(float dt, float& ifr_time) {
@@ -120,7 +198,6 @@ void Application::render(float ifr_time) {
             }
         }
     }
-
     
     glfwSwapBuffers(window_);
     glfwPollEvents();
@@ -132,9 +209,26 @@ void Application::run() {  // Temporary
     static_shader_program_->initShaderProgram();
     static_shader_program_->enable();
 
-    static_mesh_ = new StaticMesh();
+    perlin.setFrequency(4.7f);
+    perlin.setOctaveCount(4);
+    perlin.setSeed(seed);
+    perlin.setScale(1.0f);
+
+    turbulence.setFrequency(1.1f);
+    turbulence.setSeed(seed * 13 + 17);
+    turbulence.setPower(0.3f);
+    turbulence.setRoughness(3);
+    turbulence.setSourceModule(0, perlin);
+
+    noise_pipeline = new noisepp::Pipeline3D;
+    id = turbulence.addToPipeline(noise_pipeline);
+    element = noise_pipeline->getElement(id);
+    turbulence_element = noise_pipeline->getElementPtr(turbulence);
+    cache = noise_pipeline->createCache();
+
+    //static_mesh_ = new StaticMesh();
     //static_mesh_->loadFromFile("models/sphere.obj");
-    static_mesh_->loadFromFile("models/city/", "city.obj");
+    //static_mesh_->loadFromFile("models/city/", "city.obj");
     //static_mesh_->loadFromFile("models/island/", "island.obj");
     //static_mesh_->loadFromFile("models/sphere/sphere/", "sphere.obj");
     //static_mesh_->loadFromFile("models/big_sphere/", "sphere.obj");
@@ -143,8 +237,14 @@ void Application::run() {  // Temporary
     //static_mesh_->loadFromFile("models/wheel/", "wheel1.obj");
     //static_mesh_->loadFromFile("models/big_dice/", "dice.obj");
 
-    p_ = glm::vec3(-0.95f / sqrt(1.0f - 0.95f * 0.95f), 0, 0);
-    camera_ = new Camera(glm::vec3(0.0, 3.0, -3.0));
+    VoxelGenerator* vg = new VoxelGenerator;
+    static_mesh_ = vg->generateMesh(glm::ivec3(size), sphere_density);
+    delete vg;
+
+    //p_ = glm::vec3(-0.95f / sqrt(1.0f - 0.95f * 0.95f), 0, 0);
+    p_ = glm::vec3(0.0f);
+    //camera_ = new Camera(glm::vec3(0.0, 3.0, -3.0));
+    camera_ = new Camera(glm::vec3(0.0, 0.0, 0.0));
 
     glfwSetTime(0.0f);
     int cnt = 0;

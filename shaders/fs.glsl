@@ -43,7 +43,7 @@ vec3 rgbByWave(float l) {
 }
 
 void main() {
-    vec3 gLightDirection = normalize(vec3(1.0, 1.0, 0.7));
+    vec3 gLightDirection = normalize(vec3(-1.0, -1.0, 0.7));
 
     float cosTheta = clamp(dot(gLightDirection, fs_normal), 0, 1);
 
@@ -51,7 +51,8 @@ void main() {
     vec3 diffuseColor = vec3(cosTheta) * 0.8;
 
     color = vec4(texture2D(diffuseTexture, fs_UV.xy).xyz * (ambientColor + diffuseColor), 1.0);
-    //color = vec4(vec3(1.0) * (ambientColor + diffuseColor), 1.0);
+    color = vec4(vec3(1.0) * (ambientColor + diffuseColor), 1.0);
+    //color = vec4(vec3(cosTheta) * (ambientColor + diffuseColor), 1.0);
 
     float d1 = min(min(fs_tri.x, fs_tri.y), fs_tri.z);
     float d2 = min(min(fs_bari.x, fs_bari.y), fs_bari.z);
@@ -62,5 +63,5 @@ void main() {
     
 //    color = vec4(rgbByWave(getWave(575.0)), 1.0);
 
-    color *= amplify(d1, 40, -0.5) * amplify(d2, 60, -0.5); 
+    color *= amplify(d2, 60, -0.5);// * amplify(d1, 40, -0.5);
 }

@@ -61,8 +61,8 @@ void WorldPipeline::set_projection(const GLFWwindow* window) {
     glfwGetFramebufferSize(const_cast<GLFWwindow*>(window), &width, &height);
 
     float FOV = 71.0f;       // magic constant -- field of view
-    float zNear = 1.0f;      // magic constant -- near plane
-    float zFar = 100000.0f;  // magic constant -- far plane
+    float zNear = 0.1f;      // magic constant -- near plane
+    float zFar = 10000.0f;  // magic constant -- far plane
 
     projection_ = glm::mat4(1.0f);
     float ar = static_cast<float>(width) / static_cast<float>(height);

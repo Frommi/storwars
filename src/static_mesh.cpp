@@ -57,7 +57,7 @@ void StaticMesh::loadFaces(const aiMesh* ai_mesh, int mesh_index) {
 void StaticMesh::initBuffers() {
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(StaticVertex) * vertices_.size(), &vertices_.front(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(StaticVertex) * vertices_.size(), &(vertices_.front()), GL_STATIC_DRAW);
 
     for (int mesh_index = 0; mesh_index < static_cast<int>(homo_meshes_.size()); ++mesh_index) {
         glGenBuffers(1, &(homo_meshes_[mesh_index].IBO));
@@ -92,6 +92,8 @@ bool StaticMesh::loadFromFile(const std::string& file_path, const std::string& f
         loadVetices(ai_mesh, mesh_index);
         loadFaces(ai_mesh, mesh_index);
     }
+
+    fprintf(stderr, "%d\n", vertices_.size());
     
     initBuffers();
 
