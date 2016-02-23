@@ -152,7 +152,7 @@ void Application::updateInput() {
         cache = noise_pipeline->createCache();
 
         VoxelGenerator* vg = new VoxelGenerator;
-        static_mesh_ = vg->generateMesh(glm::ivec3(size), sphere_density);
+        static_mesh_ = vg->generateMesh(glm::ivec3(size), planet1);
         delete vg;
     }
 }
@@ -238,7 +238,7 @@ void Application::run() {  // Temporary
     //static_mesh_->loadFromFile("models/big_dice/", "dice.obj");
 
     VoxelGenerator* vg = new VoxelGenerator;
-    static_mesh_ = vg->generateMesh(glm::ivec3(size), sphere_density);
+    static_mesh_ = vg->generateMesh(glm::ivec3(size), planet1);
     delete vg;
 
     //p_ = glm::vec3(-0.95f / sqrt(1.0f - 0.95f * 0.95f), 0, 0);
