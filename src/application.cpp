@@ -87,6 +87,10 @@ void Application::initApp() {
     glGetIntegerv(GL_MAX_ARRAY_TEXTURE_LAYERS, &c);
     fprintf(stderr, "texture array max size = %d\n", c);
 
+    GLint d;
+    glGetIntegerv(GL_MAX_COMPUTE_SHARED_MEMORY_SIZE, &d);
+    fprintf(stderr, "shared memory in bytes = %d\n", d);
+
     this->initInputHandler(window_);
 }
 
