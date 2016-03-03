@@ -16,6 +16,8 @@
 
 #include "input_handler.h"
 #include "static_shader_program.h"
+#include "voxel_shader_program_stupid_cs.h"
+#include "voxel_shader_program_render.h"
 #include "static_mesh.h"
 #include "world_pipeline.h"
 #include "voxel_generator.h"
@@ -47,4 +49,11 @@ private:
     StaticMesh* static_mesh_;
     StaticShaderProgram* static_shader_program_;
     float roll_;
+
+    VoxelShaderProgramStupidCS* voxel_shader_program_stupid_cs_;
+    VoxelShaderProgramRender* voxel_shader_program_render_;
+
+    GLuint SSBO_pos;
+    GLuint SSBO_ind;
+    GLuint tri_cnt;
 };

@@ -55,12 +55,12 @@ void Application::initApp() {
 /*                                         
     GLFWmonitor* monitor = glfwGetPrimaryMonitor();
     const GLFWvidmode* mode = glfwGetVideoMode(monitor);
-	glfwWindowHint(GLFW_RED_BITS, mode->redBits);
-	glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
-	glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
-	glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
-	window_ = glfwCreateWindow(mode->width, mode->height, "My Title", monitor, NULL);
-*/	                                       
+    glfwWindowHint(GLFW_RED_BITS, mode->redBits);
+    glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
+    glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
+    glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
+    window_ = glfwCreateWindow(mode->width, mode->height, "My Title", monitor, NULL);
+*/                                         
     window_ = glfwCreateWindow(1200, 675, "SToR Wars", NULL, NULL);
     if (!window_) {
         glfwTerminate();
@@ -120,7 +120,7 @@ void Application::updateInput() {
     if (this->isKeyboardKeyPressed(GLFW_KEY_Z)) f_ *= 3;
 
     if (this->isKeyboardKeyPressed(GLFW_KEY_SPACE))
-      	f_ = -p_ * 0.1f;
+        f_ = -p_ * 0.1f;
 
     roll_ = 0.0f;
     if (this->isKeyboardKeyPressed(GLFW_KEY_Q)) 
@@ -162,7 +162,7 @@ void Application::updateInput() {
 }
 
 void Application::tick(float dt, float& ifr_time) {
-	p_ += f_;        
+    p_ += f_;        
     float g = 1.0f / static_cast<float>(sqrt(1.0f + glm::dot(p_, p_)));
     ifr_time += dt / g;
     camera_->updatePositionBy(p_ * dt);
@@ -172,7 +172,7 @@ void Application::render(float ifr_time) {
     roll_ *= 1000.0f;
 
     glm::vec2 d_mouse = -pullCursorDelta();
-    camera_->rotatePitchYawRoll(-d_mouse.y, -d_mouse.x, roll_);	
+    camera_->rotatePitchYawRoll(-d_mouse.y, -d_mouse.x, roll_); 
 
     for (int i = 0; i <= 0; ++i) {
         for (int j = 0; j <= 0; ++j) {
@@ -185,20 +185,29 @@ void Application::render(float ifr_time) {
                 glm::vec3 eye_pos = glm::vec3(i, j, k) * 4.0f;
                 pipe.set_move(eye_pos);
 
+                voxel_shader_program_stupid_cs_->enable();
+                voxel_shader_program_stupid_cs_->set_size_uniform(glm::uvec3(size, size, size));
+
+                //fprintf(stderr, "%d -- no error; %d -- my errors\n", GL_NO_ERROR, glGetError());
+                glDispatchCompute(size / 8, size / 8, size / 8);
+                glFinish();
+
+/*
                 static_shader_program_->set_obj_velocity_uniform(glm::vec3(0.0f, 0.0f, 0.0f));
 
                 static_shader_program_->set_W_matrix_uniform(pipe.get_W_matrix());
                 static_shader_program_->set_VP_matrix_uniform(pipe.get_VP_matrix());
                 
-	            static_shader_program_->set_obs_impulse_uniform(p_);
-	            static_shader_program_->set_obs_pos_uniform(camera_->get_position());                	
+                static_shader_program_->set_obs_impulse_uniform(p_);
+                static_shader_program_->set_obs_pos_uniform(camera_->get_position());                   
                 
-				static_shader_program_->set_inverse_g_uniform(1.0f / (1.0f + sqrt(1.0f + glm::dot(p_, p_))));
-				static_shader_program_->set_obs_ifr_time_uniform(ifr_time);
-				static_shader_program_->set_map_size_uniform(1.0);
-				static_shader_program_->set_diffuse_texture_uniform(0);
-				
+                static_shader_program_->set_inverse_g_uniform(1.0f / (1.0f + sqrt(1.0f + glm::dot(p_, p_))));
+                static_shader_program_->set_obs_ifr_time_uniform(ifr_time);
+                static_shader_program_->set_map_size_uniform(1.0);
+                static_shader_program_->set_diffuse_texture_uniform(0);
+                
                 static_mesh_->render();
+*/
             }
         }
     }
@@ -209,9 +218,30 @@ void Application::render(float ifr_time) {
 }
 
 void Application::run() {  // Temporary
+    /*
     static_shader_program_ = new StaticShaderProgram();
     static_shader_program_->initShaderProgram();
     static_shader_program_->enable();
+    */
+
+    voxel_shader_program_stupid_cs_ = new VoxelShaderProgramStupidCS();
+    voxel_shader_program_stupid_cs_->initShaderProgram();
+    voxel_shader_program_stupid_cs_->enable();
+
+    glGenBuffers(1, &SSBO_pos);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, SSBO_pos);
+
+    glGenBuffers(1, &SSBO_ind);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, SSBO_ind);
+
+    glGenBuffers(1, &tri_cnt);
+    glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 2, tri_cnt);
+
+    fprintf(stderr, "locs: %u, %u, %u\n", SSBO_pos, SSBO_ind, tri_cnt);
+
+    voxel_shader_program_render_ = new VoxelShaderProgramRender();
+    voxel_shader_program_render_->initShaderProgram();
+
 
     perlin.setFrequency(4.7f);
     perlin.setOctaveCount(4);
@@ -241,9 +271,13 @@ void Application::run() {  // Temporary
     //static_mesh_->loadFromFile("models/wheel/", "wheel1.obj");
     //static_mesh_->loadFromFile("models/big_dice/", "dice.obj");
 
+/*
+
     VoxelGenerator* vg = new VoxelGenerator;
     static_mesh_ = vg->generateMesh(glm::ivec3(size), planet1);
     delete vg;
+
+*/
 
     //p_ = glm::vec3(-0.95f / sqrt(1.0f - 0.95f * 0.95f), 0, 0);
     p_ = glm::vec3(0.0f);
@@ -256,18 +290,18 @@ void Application::run() {  // Temporary
     float pref = static_cast<float>(glfwGetTime());
     float ifr_time = 0.0f;
     while (!glfwWindowShouldClose(window_)) {
-    	updateInput();
-    	float t = static_cast<float>(glfwGetTime());
-    	dt += t - pref;
-    	tick(t - pref, ifr_time);
-    	pref = t;
-    	render(ifr_time);
-    	++cnt;      
-    	if (dt > 1.0f) {
-    		printf("frames pre sec: %d, milisec for frame: %d\n", cnt, 1000 / cnt);
-//    		printf("ifr_time: %f, self_time: %f\n", ifr_time, t);
-    		cnt = 0;
-    		dt -= 1.0f;
-    	}
+        updateInput();
+        float t = static_cast<float>(glfwGetTime());
+        dt += t - pref;
+        tick(t - pref, ifr_time);
+        pref = t;
+        render(ifr_time);
+        ++cnt;      
+        if (dt > 1.0f) {
+            printf("frames pre sec: %d, milisec for frame: %d\n", cnt, 1000 / cnt);
+//          printf("ifr_time: %f, self_time: %f\n", ifr_time, t);
+            cnt = 0;
+            dt -= 1.0f;
+        }
     }
 }
