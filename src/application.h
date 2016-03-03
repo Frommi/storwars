@@ -56,4 +56,6 @@ private:
     GLuint SSBO_pos;
     GLuint SSBO_ind;
     GLuint tri_cnt;
+
+    //GLuint VBO;
 };

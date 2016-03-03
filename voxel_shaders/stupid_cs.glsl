@@ -3,11 +3,11 @@
 layout(local_size_x = 8, local_size_y = 8, local_size_z = 8) in;
 
 layout (std430, binding = 0) buffer SSBO_pos { 
-    vec3 SSBO_position[];
+    vec4 SSBO_position[];
 };
 
 layout (std430, binding = 1) buffer SSBO_ind {
-    uvec3 SSBO_index[];
+    uint SSBO_index[];
 };
 
 layout(binding = 2) uniform atomic_uint tri_cnt;
@@ -15,12 +15,13 @@ layout(binding = 2) uniform atomic_uint tri_cnt;
 uniform uvec3 size;
 
 float density(vec3 pos) {
-    float sphere = distance(pos, vec3(64.2347));
+    float sphere = distance(pos, vec3(32.0)) - 30.5133454;
     return sphere;
 }
 
 void addVertex(uvec3 id, vec3 position) {
-    SSBO_position[int(dot(id, uvec3(size.y * size.z, size.z, 1)))] = position;
+    SSBO_position[id.x * size.y * size.z + id.y * size.z + id.z] = vec4(position / 10.0, 0.0);
+    //SSBO_position[uint(dot(id, uvec3(size.y * size.z, size.z, 1)))] = position;
 }
 
 void addQuad(ivec3 a, ivec3 b, ivec3 c, ivec3 d) {
@@ -31,17 +32,33 @@ void addQuad(ivec3 a, ivec3 b, ivec3 c, ivec3 d) {
 
     uvec3 global_mult = uvec3(size.y * size.z, size.z, 1);
 
-    SSBO_index[atomicCounterIncrement(tri_cnt)] = uvec3(
-        dot(uvec3(a), global_mult),
-        dot(uvec3(b), global_mult),
-        dot(uvec3(c), global_mult)
-    );
+    uint i = atomicCounterIncrement(tri_cnt);
+    SSBO_index[i * 6 + 0] = a.x * global_mult.x + a.y * global_mult.y + a.z + 1;
+    SSBO_index[i * 6 + 1] = b.x * global_mult.x + b.y * global_mult.y + b.z + 1;
+    SSBO_index[i * 6 + 2] = c.x * global_mult.x + c.y * global_mult.y + c.z + 1;
+    SSBO_index[i * 6 + 3] = a.x * global_mult.x + a.y * global_mult.y + a.z + 1;
+    SSBO_index[i * 6 + 4] = d.x * global_mult.x + d.y * global_mult.y + d.z + 1;
+    SSBO_index[i * 6 + 5] = c.x * global_mult.x + c.y * global_mult.y + c.z + 1;
 
-    SSBO_index[atomicCounterIncrement(tri_cnt)] = uvec3(
-        dot(uvec3(b), global_mult),
-        dot(uvec3(c), global_mult),
-        dot(uvec3(d), global_mult)
-    );
+    /*
+    SSBO_index[atomicCounterIncrement(tri_cnt)] = uvec4(
+        a.x * global_mult.x + a.y * global_mult.y + a.z,
+        b.x * global_mult.x + b.y * global_mult.y + b.z,
+        c.x * global_mult.x + c.y * global_mult.y + c.z,
+        d.x * global_mult.x + d.y * global_mult.y + d.z
+        //dot(uvec3(a), global_mult),
+        //dot(uvec3(b), global_mult),
+        //dot(uvec3(c), global_mult)
+    );*/
+/*
+    SSBO_index[atomicCounterIncrement(tri_cnt)] = uvec3(2, 3, 4
+        b.x * global_mult.x + b.y * global_mult.y + b.z,
+        c.x * global_mult.x + c.y * global_mult.y + c.z,
+        d.x * global_mult.x + d.y * global_mult.y + d.z
+    //    dot(uvec3(b), global_mult),
+    //    dot(uvec3(c), global_mult),
+    //    dot(uvec3(d), global_mult)
+    );*/
 }
 
 void main() {
