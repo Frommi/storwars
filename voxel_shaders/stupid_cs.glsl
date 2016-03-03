@@ -15,7 +15,7 @@ layout(binding = 2) uniform atomic_uint tri_cnt;
 uniform uvec3 size;
 
 float density(vec3 pos) {
-    float sphere = distance(pos, vec3(32.0)) - 30.5133454;
+    float sphere = distance(pos, vec3(64.0)) - 62.5133454;
     return sphere;
 }
 

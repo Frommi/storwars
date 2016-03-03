@@ -1,6 +1,6 @@
 #include "application.h"
 
-const int size = 64;
+const int size = 128;
 
 unsigned int seed = 239017;
 
@@ -196,17 +196,23 @@ void Application::render(float ifr_time) {
                 glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint), zero, GL_STATIC_DRAW);
                 delete zero;
 
+
                 glBindBuffer(GL_SHADER_STORAGE_BUFFER, SSBO_pos);
                 glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, SSBO_pos);
                 glBindBuffer(GL_SHADER_STORAGE_BUFFER, SSBO_ind);
                 glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, SSBO_ind);
+                glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, tri_cnt);
+                glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 2, tri_cnt);
                 glDispatchCompute(size / 8, size / 8, size / 8);
-                //glFinish();
+                glFinish();
+
+                glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT | GL_ATOMIC_COUNTER_BARRIER_BIT);
 
                 int counter = *((GLuint*) glMapBufferRange(GL_ATOMIC_COUNTER_BUFFER, 0, 1 * sizeof(GLuint), GL_MAP_READ_BIT | GL_MAP_WRITE_BIT));
                 glUnmapBuffer(GL_ATOMIC_COUNTER_BUFFER);
                 fprintf(stderr, "%d\n", counter);
 
+/*
                 glBindBuffer(GL_SHADER_STORAGE_BUFFER, SSBO_ind);
                 GLuint* inds = (GLuint*) glMapBufferRange(GL_SHADER_STORAGE_BUFFER, 0, 6 * counter * sizeof(GLuint), GL_MAP_READ_BIT | GL_MAP_WRITE_BIT);
                 glUnmapBuffer(GL_SHADER_STORAGE_BUFFER);
@@ -219,19 +225,12 @@ void Application::render(float ifr_time) {
                     if (max_i < inds[i]) max_i = inds[i];
                 }
                 fprintf(stderr, "min_i: %u, max_i: %u\n", min_i, max_i);
-
+*/
+                
                 voxel_shader_program_render_->enable();
                 voxel_shader_program_render_->set_W_matrix_uniform(pipe.get_W_matrix());
                 voxel_shader_program_render_->set_VP_matrix_uniform(pipe.get_VP_matrix());
-/*
-                glEnableVertexAttribArray(0);
-                glBindBuffer(GL_ARRAY_BUFFER, SSBO_pos);
-                glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(glm::vec4), (const GLvoid*) 0);
-                glDrawArrays(GL_POINTS, 0, size * size * size);
-                glDisableVertexAttribArray(0);
-*/
-
-                glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
+                
 
                 glEnableVertexAttribArray(0);
                 glBindBuffer(GL_ARRAY_BUFFER, SSBO_pos);
@@ -239,6 +238,14 @@ void Application::render(float ifr_time) {
                 glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, SSBO_ind);
                 glDrawElements(GL_TRIANGLES, counter * 6, GL_UNSIGNED_INT, 0);
                 glDisableVertexAttribArray(0);
+
+/*
+                glEnableVertexAttribArray(0);
+                glBindBuffer(GL_ARRAY_BUFFER, SSBO_pos);
+                glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(glm::vec4), (const GLvoid*) 0);
+                glDrawArrays(GL_POINTS, 0, size * size * size);
+                glDisableVertexAttribArray(0);
+*/
 
 /*
                 static_shader_program_->set_obj_velocity_uniform(glm::vec3(0.0f, 0.0f, 0.0f));
@@ -278,13 +285,13 @@ void Application::run() {  // Temporary
 
     glGenBuffers(1, &SSBO_pos);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, SSBO_pos);
-    glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(glm::vec4) * size * size * size, NULL, GL_STATIC_READ);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(glm::vec4) * size * size * size, NULL, GL_STREAM_COPY);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, SSBO_pos);
     //glBindBufferRange(GL_SHADER_STORAGE_BUFFER, 0, SSBO_pos, 0, size*size*size*3*4);
 
     glGenBuffers(1, &SSBO_ind);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, SSBO_ind);
-    glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GLuint) * size * size * size * 6, NULL, GL_STATIC_READ);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GLuint) * size * size * size * 6 * 3, NULL, GL_STREAM_COPY);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, SSBO_ind);
     //glBindBufferRange(GL_SHADER_STORAGE_BUFFER, 1, SSBO_ind, 0, size*size*size*3*3*4);
 
@@ -292,15 +299,13 @@ void Application::run() {  // Temporary
     *zero = 0;
     glGenBuffers(1, &tri_cnt);
     glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, tri_cnt);
-    glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint), zero, GL_STATIC_DRAW);
+    glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint), zero, GL_DYNAMIC_READ);
     glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 2, tri_cnt);
     delete zero;
 
-    fprintf(stderr, "locs: %u, %u, %u\n", SSBO_pos, SSBO_ind, tri_cnt);
 
     voxel_shader_program_render_ = new VoxelShaderProgramRender();
     voxel_shader_program_render_->initShaderProgram();
-
 
     perlin.setFrequency(4.7f);
     perlin.setOctaveCount(4);
