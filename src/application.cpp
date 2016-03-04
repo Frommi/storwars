@@ -178,7 +178,7 @@ void Application::render(float ifr_time) {
     for (int i = 0; i < 9; ++i)
         for (int j = 0; j < 9; ++j)
             for (int k = 0; k < 9; ++k)
-                pos_buffer[i * 9 * 9 + j * 9 + k] = glm::uvec3(i, j, k);
+                pos_buffer.push_back(glm::uvec3(i, j, k));
 
     for (int i = 0; i <= 0; ++i) {
         for (int j = 0; j <= 0; ++j) {
@@ -210,6 +210,7 @@ void Application::render(float ifr_time) {
                 glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, SSBO_ind);
                 glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, tri_cnt);
                 glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 2, tri_cnt);
+                
                 glDispatchCompute(size / 8, size / 8, size / 8);
                 glFinish();
 

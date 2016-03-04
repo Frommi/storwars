@@ -60,6 +60,14 @@ void main() {
 //  memoryBarrierShared();
     barrier();
 
+    pos = vec3(gl_GlobalInvocationID) + 0.00000001 * vec3(offset_pos[0]);
+    vec4 d = vec4(
+        density(pos + vec3(1.0, 0.0, 0.0)),
+        density(pos + vec3(0.0, 1.0, 0.0)),
+        density(pos + vec3(0.0, 0.0, 1.0)),
+        density(pos)
+    );
+/*
     pos = vec3(gl_GlobalInvocationID);
     vec4 d = vec4(
         density_cache[uint(dot(pos + vec3(1.0, 0.0, 0.0), density_mult))],
@@ -67,7 +75,7 @@ void main() {
         density_cache[uint(dot(pos + vec3(0.0, 0.0, 1.0), density_mult))],
         density_cache[uint(dot(pos, density_mult))]
     );
-
+*/
     addVertex(gl_GlobalInvocationID, vec3(gl_GlobalInvocationID) + vec3(0.5));
 
     vec3 signs = d.xyz * d.www;

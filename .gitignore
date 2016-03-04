@@ -10,6 +10,7 @@
 *.jpg
 *.vrb
 *.dll
+log.txt
 debug/
 bin/
 obj/
