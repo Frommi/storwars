@@ -18,11 +18,6 @@ public:
         glUniform3ui(size_uniform_, size.x, size.y, size.z);
     }
 
-    inline void set_offset_pos_uniform(const glm::uvec3* offset_pos) const {
-        glUniform3uiv(offset_pos_uniform_, 9*9*9, (const GLuint*) offset_pos);
-    }
-
 private:
     GLuint size_uniform_;
-    GLuint offset_pos_uniform_;
 };

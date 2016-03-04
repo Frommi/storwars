@@ -1,6 +1,6 @@
 #include "application.h"
 
-const int size = 320;
+const int size = 64;
 
 unsigned int seed = 239017;
 
@@ -194,7 +194,6 @@ void Application::render(float ifr_time) {
 
                 voxel_shader_program_generate_->enable();
                 voxel_shader_program_generate_->set_size_uniform(glm::uvec3(size, size, size));
-                voxel_shader_program_generate_->set_offset_pos_uniform(&(pos_buffer[0]));
 
                 //fprintf(stderr, "%d -- no error; %d -- my errors\n", GL_NO_ERROR, glGetError());
 

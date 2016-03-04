@@ -11,11 +11,8 @@ bool VoxelShaderProgramGenerate::initShaderProgram() {
         return false;
 
     size_uniform_ = getUniformLocation("size");
-    offset_pos_uniform_ = getUniformLocation("offset_pos");
 
-    if (size_uniform_ == INVALID_LOCATION ||
-        offset_pos_uniform_ == INVALID_LOCATION) {
-
+    if (size_uniform_ == INVALID_LOCATION) {
         fprintf(stderr, "invalid uniform location\n");
         return false;
     }

@@ -2,7 +2,7 @@
 
 layout(local_size_x = 8, local_size_y = 8, local_size_z = 8) in;
 
-const float s = 160.0;
+const float s = 32.0;
 const uint local_size = gl_WorkGroupSize.x * gl_WorkGroupSize.y * gl_WorkGroupSize.z;
 const uint local_size_vertex = (gl_WorkGroupSize.x + 1) * (gl_WorkGroupSize.y + 1) * (gl_WorkGroupSize.z + 1);
 const vec3 density_mult = vec3((float(gl_WorkGroupSize.y) + 1.0) * (float(gl_WorkGroupSize.z) + 1.0), float(gl_WorkGroupSize.z) + 1.0, 1.0);
@@ -18,13 +18,15 @@ layout (std430, binding = 1) buffer SSBO_ind {
 
 layout(binding = 2) uniform atomic_uint tri_cnt;
 
-
 uniform uvec3 size;
-uniform uvec3 offset_pos[local_size_vertex];
-
-
 shared float density_cache[local_size_vertex];
 
+uvec3 offset(uint id) {
+    uvec3 res = (id.xxx / uvec3(9*9, 9*9, 9)) * uvec3(1, 9, 9);
+    res.z = id - res.z;
+    res.y = id / 9 - res.y;
+    return res;
+}
 
 float density(vec3 pos) {
     float sphere = distance(pos, vec3(s)) - (s - 1.238746);
@@ -49,33 +51,25 @@ void addQuad(ivec3 a, ivec3 b, ivec3 c, ivec3 d) {
 }
 
 void main() {
-    vec3 pos = vec3(gl_WorkGroupID * gl_WorkGroupSize + offset_pos[gl_LocalInvocationIndex]);
+    vec3 pos = vec3(gl_WorkGroupID * gl_WorkGroupSize + offset(gl_LocalInvocationIndex));
     density_cache[gl_LocalInvocationIndex] = density(pos);
 
     if (gl_LocalInvocationIndex + local_size < local_size_vertex) {
-        pos = vec3(gl_WorkGroupID * gl_WorkGroupSize + offset_pos[gl_LocalInvocationIndex + local_size]);
+        pos = vec3(gl_WorkGroupID * gl_WorkGroupSize + offset(gl_LocalInvocationIndex + local_size));
         density_cache[gl_LocalInvocationIndex + local_size] = density(pos);
     }
 
-//  memoryBarrierShared();
+    memoryBarrierShared();
     barrier();
 
-    pos = vec3(gl_GlobalInvocationID) + 0.00000001 * vec3(offset_pos[0]);
-    vec4 d = vec4(
-        density(pos + vec3(1.0, 0.0, 0.0)),
-        density(pos + vec3(0.0, 1.0, 0.0)),
-        density(pos + vec3(0.0, 0.0, 1.0)),
-        density(pos)
-    );
-/*
-    pos = vec3(gl_GlobalInvocationID);
+    pos = vec3(gl_LocalInvocationID);
     vec4 d = vec4(
         density_cache[uint(dot(pos + vec3(1.0, 0.0, 0.0), density_mult))],
         density_cache[uint(dot(pos + vec3(0.0, 1.0, 0.0), density_mult))],
         density_cache[uint(dot(pos + vec3(0.0, 0.0, 1.0), density_mult))],
         density_cache[uint(dot(pos, density_mult))]
     );
-*/
+
     addVertex(gl_GlobalInvocationID, vec3(gl_GlobalInvocationID) + vec3(0.5));
 
     vec3 signs = d.xyz * d.www;
