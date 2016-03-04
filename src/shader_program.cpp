@@ -28,7 +28,7 @@ bool ShaderProgram::preInit() {
 std::string ShaderProgram::loadShaderFromFile(const std::string& file_name) {
     std::string data;
     if (FILE *fp = fopen(file_name.c_str(), "r")) {
-        char buf[1024];
+        char buf[8192];
         while (size_t len = fread(buf, 1, sizeof(buf), fp))
             data.insert(data.end(), buf, buf + len);
         fclose(fp);
@@ -60,8 +60,8 @@ bool ShaderProgram::addShader(const std::string& file_name, const GLenum shader_
     glGetShaderiv(shader_obj, GL_COMPILE_STATUS, &success);
 
     if (!success) {
-        GLchar info_log[1024];
-        glGetShaderInfoLog(shader_obj, 1024, NULL, info_log);
+        GLchar info_log[8192];
+        glGetShaderInfoLog(shader_obj, 8192, NULL, info_log);
         fprintf(stderr, "Error compiling shader type %d: '%s'\n", shader_type, info_log);
         return false;
     }
@@ -73,7 +73,7 @@ bool ShaderProgram::addShader(const std::string& file_name, const GLenum shader_
 
 bool ShaderProgram::compileShaderProgram() {
     GLint success = 0;
-    GLchar error_log[1024] = { 0 };
+    GLchar error_log[8192] = { 0 };
 
     glLinkProgram(shader_program_obj_);
 

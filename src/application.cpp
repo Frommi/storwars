@@ -1,6 +1,6 @@
 #include "application.h"
 
-const int size = 128;
+const int size = 320;
 
 unsigned int seed = 239017;
 
@@ -174,6 +174,12 @@ void Application::render(float ifr_time) {
     glm::vec2 d_mouse = -pullCursorDelta();
     camera_->rotatePitchYawRoll(-d_mouse.y, -d_mouse.x, roll_); 
 
+    std::vector<glm::uvec3> pos_buffer;
+    for (int i = 0; i < 9; ++i)
+        for (int j = 0; j < 9; ++j)
+            for (int k = 0; k < 9; ++k)
+                pos_buffer[i * 9 * 9 + j * 9 + k] = glm::uvec3(i, j, k);
+
     for (int i = 0; i <= 0; ++i) {
         for (int j = 0; j <= 0; ++j) {
             for (int k = 0; k <= 0; ++k) {
@@ -186,8 +192,9 @@ void Application::render(float ifr_time) {
                 pipe.set_move(eye_pos);
                 pipe.set_move(-camera_->get_position());
 
-                voxel_shader_program_stupid_cs_->enable();
-                voxel_shader_program_stupid_cs_->set_size_uniform(glm::uvec3(size, size, size));
+                voxel_shader_program_generate_->enable();
+                voxel_shader_program_generate_->set_size_uniform(glm::uvec3(size, size, size));
+                voxel_shader_program_generate_->set_offset_pos_uniform(&(pos_buffer[0]));
 
                 //fprintf(stderr, "%d -- no error; %d -- my errors\n", GL_NO_ERROR, glGetError());
 
@@ -279,9 +286,9 @@ void Application::run() {  // Temporary
     static_shader_program_->enable();
     */
 
-    voxel_shader_program_stupid_cs_ = new VoxelShaderProgramStupidCS();
-    voxel_shader_program_stupid_cs_->initShaderProgram();
-    voxel_shader_program_stupid_cs_->enable();
+    voxel_shader_program_generate_ = new VoxelShaderProgramGenerate();
+    voxel_shader_program_generate_->initShaderProgram();
+    voxel_shader_program_generate_->enable();
 
     glGenBuffers(1, &SSBO_pos);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, SSBO_pos);
@@ -350,7 +357,7 @@ void Application::run() {  // Temporary
 
     glfwSetTime(0.0f);
     int cnt = 0;
-    float dt;
+    float dt = 0;
     float pref = static_cast<float>(glfwGetTime());
     float ifr_time = 0.0f;
     while (!glfwWindowShouldClose(window_)) {

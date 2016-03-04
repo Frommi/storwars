@@ -93,7 +93,7 @@ bool StaticMesh::loadFromFile(const std::string& file_path, const std::string& f
         loadFaces(ai_mesh, mesh_index);
     }
 
-    fprintf(stderr, "%d\n", vertices_.size());
+    fprintf(stderr, "%llu\n", vertices_.size());
     
     initBuffers();
 

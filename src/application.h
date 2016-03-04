@@ -16,7 +16,7 @@
 
 #include "input_handler.h"
 #include "static_shader_program.h"
-#include "voxel_shader_program_stupid_cs.h"
+#include "voxel_shader_program_generate.h"
 #include "voxel_shader_program_render.h"
 #include "static_mesh.h"
 #include "world_pipeline.h"
@@ -50,7 +50,7 @@ private:
     StaticShaderProgram* static_shader_program_;
     float roll_;
 
-    VoxelShaderProgramStupidCS* voxel_shader_program_stupid_cs_;
+    VoxelShaderProgramGenerate* voxel_shader_program_generate_;
     VoxelShaderProgramRender* voxel_shader_program_render_;
 
     GLuint SSBO_pos;

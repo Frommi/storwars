@@ -131,8 +131,8 @@ StaticMesh* VoxelGenerator::generateMesh(const glm::ivec3& resolution, float (*d
     mesh->homo_meshes_[0].vertex_offset = 0;
     mesh->homo_meshes_[0].vertex_number = vertices.size();
 
-    fprintf(stderr, "%d\n", vertices.size());
-    fprintf(stderr, "%d\n", indices.size());
+    fprintf(stderr, "%llu\n", vertices.size());
+    fprintf(stderr, "%llu\n", indices.size());
 
     mesh->initBuffers();
 
