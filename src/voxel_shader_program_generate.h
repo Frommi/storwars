@@ -18,6 +18,11 @@ public:
         glUniform3ui(size_uniform_, size.x, size.y, size.z);
     }
 
+    inline void set_time_uniform(const float t) const {
+        glUniform1f(time_uniform_, t);
+    }
+
 private:
     GLuint size_uniform_;
+    GLuint time_uniform_;
 };

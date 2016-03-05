@@ -22,7 +22,12 @@ public:
         glUniformMatrix4fv(VP_matrix_uniform_, 1, GL_TRUE, (const GLfloat*) &(VP[0][0]));
     }
 
+    inline void set_time_uniform(const float t) const {
+        glUniform1f(time_uniform_, t);
+    }
+
 private:
     GLuint W_matrix_uniform_;
     GLuint VP_matrix_uniform_;
+    GLuint time_uniform_;
 };

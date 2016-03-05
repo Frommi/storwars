@@ -13,11 +13,13 @@ bool VoxelShaderProgramRender::initShaderProgram() {
     if (!this->compileShaderProgram())
         return false;
 
-    W_matrix_uniform_        = getUniformLocation("u_W");
-    VP_matrix_uniform_       = getUniformLocation("u_VP");
+    W_matrix_uniform_  = getUniformLocation("u_W");
+    VP_matrix_uniform_ = getUniformLocation("u_VP");
+    time_uniform_      = getUniformLocation("time");
 
-    if (W_matrix_uniform_        == INVALID_LOCATION ||
-        VP_matrix_uniform_       == INVALID_LOCATION) {
+    if (W_matrix_uniform_  == INVALID_LOCATION ||
+        VP_matrix_uniform_ == INVALID_LOCATION ||
+        time_uniform_      == INVALID_LOCATION) {
 
         fprintf(stderr, "invalid uniform location\n");
         return false;
