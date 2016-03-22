@@ -52,16 +52,16 @@ Application::Application() {}
 void Application::initApp() {
     if (!glfwInit()) exit(EXIT_FAILURE);
     glfwSetErrorCallback(errorCallback);
-/*                                         
+
     GLFWmonitor* monitor = glfwGetPrimaryMonitor();
     const GLFWvidmode* mode = glfwGetVideoMode(monitor);
     glfwWindowHint(GLFW_RED_BITS, mode->redBits);
     glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
     glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
     glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
-    window_ = glfwCreateWindow(mode->width, mode->height, "My Title", monitor, NULL);
-*/                                         
-    window_ = glfwCreateWindow(1200, 675, "SToR Wars", NULL, NULL);
+    window_ = glfwCreateWindow(mode->width, mode->height, "SToR Wars", monitor, NULL);
+
+    // window_ = glfwCreateWindow(1200, 675, "SToR Wars", NULL, NULL);
     if (!window_) {
         glfwTerminate();
         exit(EXIT_FAILURE);
@@ -218,7 +218,7 @@ void Application::render(float ifr_time) {
 
                 int counter = *((GLuint*) glMapBufferRange(GL_ATOMIC_COUNTER_BUFFER, 0, 1 * sizeof(GLuint), GL_MAP_READ_BIT | GL_MAP_WRITE_BIT));
                 glUnmapBuffer(GL_ATOMIC_COUNTER_BUFFER);
-                fprintf(stderr, "%d\n", counter);
+                // fprintf(stderr, "%d\n", counter);
 
 /*
                 glBindBuffer(GL_SHADER_STORAGE_BUFFER, SSBO_ind);
@@ -362,6 +362,7 @@ void Application::run() {  // Temporary
     float dt = 0;
     float pref = static_cast<float>(glfwGetTime());
     float ifr_time = 0.0f;
+    int fps_tick = 1000;
     while (!glfwWindowShouldClose(window_)) {
         updateInput();
         float t = static_cast<float>(glfwGetTime());
@@ -369,12 +370,12 @@ void Application::run() {  // Temporary
         tick(t - pref, ifr_time);
         pref = t;
         render(ifr_time);
-        ++cnt;      
-        if (dt > 1.0f) {
-            printf("frames pre sec: %d, milisec for frame: %d\n", cnt, 1000 / cnt);
+        ++cnt;
+        if (dt > fps_tick * 0.001) {
+            printf("frames per %d millisec: %d, milisec for frame: %d\n", fps_tick, cnt, fps_tick / cnt);
 //          printf("ifr_time: %f, self_time: %f\n", ifr_time, t);
             cnt = 0;
-            dt -= 1.0f;
+            dt -= fps_tick * 0.001;
         }
     }
 }

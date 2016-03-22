@@ -9,19 +9,19 @@
 
 class Texture {
 public:
-	Texture() {}
-	~Texture();
+    Texture() {}
+    ~Texture();
 
-	bool loadFromFile(const std::string& file_name);
+    bool loadFromFile(const std::string& file_name);
 
-	void bindToUnit(GLenum texture_unit) const;
+    void bindToUnit(GLenum texture_unit) const;
 
 private:
-	GLuint texture_object_;
+    GLuint texture_object_;
 
-	int width_;
-	int height_;
+    int width_;
+    int height_;
 
-	unsigned char* image_data_;
+    unsigned char* image_data_;
 };
 

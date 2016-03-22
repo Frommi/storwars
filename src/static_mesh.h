@@ -46,7 +46,7 @@ private:
         unsigned int vertex_offset;
         unsigned int vertex_number;
 
-	    int material_index;
+        int material_index;
 
         GLuint IBO;
         std::vector<glm::uvec3> indices;
