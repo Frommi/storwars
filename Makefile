@@ -15,7 +15,7 @@ else
 	CXXFLAGS = -O2 -Wall -pedantic -Wextra -std=c++11 -lGLEW -lglfw3 -lGL -lX11 -lXi -lXrandr -lXxf86vm -lXinerama -lXcursor -lrt -lm -pthread -lassimp
 endif
 
-sources = main.cpp application.cpp voxel_generator.cpp voxel_shader_program_generate.cpp voxel_shader_program_render.cpp static_mesh.cpp str_event.cpp static_shader_program.cpp shader_program.cpp world_pipeline.cpp input_handler.cpp texture.cpp
+sources = main.cpp application.cpp static_mesh.cpp str_event.cpp static_shader_program.cpp shader_program.cpp world_pipeline.cpp input_handler.cpp texture.cpp
 objects = $(sources:.cpp=.o)
 
 all: $(bindir) $(objdir) $(exec)

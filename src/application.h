@@ -16,13 +16,8 @@
 
 #include "input_handler.h"
 #include "static_shader_program.h"
-#include "voxel_shader_program_generate.h"
-#include "voxel_shader_program_render.h"
 #include "static_mesh.h"
 #include "world_pipeline.h"
-#include "voxel_generator.h"
-
-#include <noisepp/core/Noise.h>
 
 class Application : public InputHandler {
 public:
@@ -49,13 +44,4 @@ private:
     StaticMesh* static_mesh_;
     StaticShaderProgram* static_shader_program_;
     float roll_;
-
-    VoxelShaderProgramGenerate* voxel_shader_program_generate_;
-    VoxelShaderProgramRender* voxel_shader_program_render_;
-
-    GLuint SSBO_pos;
-    GLuint SSBO_ind;
-    GLuint tri_cnt;
-
-    //GLuint VBO;
 };

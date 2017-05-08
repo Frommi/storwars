@@ -28,6 +28,7 @@ vec3 rot(float a, vec3 v) {
 }
 
 void main() {
+	u_ObsIFRTime + u_MapSize + u_ObjVelocity.x;
 	tcs_position = (u_W * vec4(Position * 0.1, 1.0)).xyz;
 //    tcs_position *= 0.1;
     	
