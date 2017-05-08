@@ -31,23 +31,23 @@ public:
     }
 
     inline void set_inverse_g_uniform(float inverse_g) const {
-    	glUniform1f(inverse_g_uniform_, inverse_g);
+        glUniform1f(inverse_g_uniform_, inverse_g);
     }
 
     inline void set_obs_ifr_time_uniform(float obs_ifr_time) const {
-    	glUniform1f(obs_ifr_time_uniform_, obs_ifr_time);
+        glUniform1f(obs_ifr_time_uniform_, obs_ifr_time);
     }
 
     inline void set_map_size_uniform(float map_size) const {
-    	glUniform1f(map_size_uniform_, map_size);
+        glUniform1f(map_size_uniform_, map_size);
     }
 
     inline void set_diffuse_texture_uniform(int index) const {
-    	glUniform1i(diffuse_texture_uniform_, index);
+        glUniform1i(diffuse_texture_uniform_, index);
     }
 
     inline void set_obj_velocity_uniform(const glm::vec3& obj_velocity) {
-    	glUniform3fv(obj_velocity_uniform_, 1, (const GLfloat*) &(obj_velocity[0]));
+        glUniform3fv(obj_velocity_uniform_, 1, (const GLfloat*) &(obj_velocity[0]));
     }
 
 private:

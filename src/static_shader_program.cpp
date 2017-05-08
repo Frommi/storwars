@@ -22,11 +22,11 @@ bool StaticShaderProgram::initShaderProgram() {
     if (!this->compileShaderProgram())
         return false;
 
-    W_matrix_uniform_    	 = getUniformLocation("u_W");
-    VP_matrix_uniform_   	 = getUniformLocation("u_VP");
+    W_matrix_uniform_        = getUniformLocation("u_W");
+    VP_matrix_uniform_       = getUniformLocation("u_VP");
 
-    obs_pos_uniform_     	 = getUniformLocation("u_ObsPos");
-    obs_impulse_uniform_ 	 = getUniformLocation("u_ObsImpulse");
+    obs_pos_uniform_         = getUniformLocation("u_ObsPos");
+    obs_impulse_uniform_     = getUniformLocation("u_ObsImpulse");
     inverse_g_uniform_       = getUniformLocation("u_InverseG");
     obs_ifr_time_uniform_    = getUniformLocation("u_ObsIFRTime");
 
@@ -37,14 +37,14 @@ bool StaticShaderProgram::initShaderProgram() {
     obj_velocity_uniform_    = getUniformLocation("u_ObjVelocity");
 
     if (W_matrix_uniform_        == INVALID_LOCATION ||
-    	VP_matrix_uniform_       == INVALID_LOCATION ||
-    	obs_pos_uniform_         == INVALID_LOCATION ||
-    	obs_impulse_uniform_     == INVALID_LOCATION ||
-    	diffuse_texture_uniform_ == INVALID_LOCATION ||
-    	inverse_g_uniform_       == INVALID_LOCATION ||
-    	obs_ifr_time_uniform_    == INVALID_LOCATION ||
-    	map_size_uniform_        == INVALID_LOCATION ||
-    	obj_velocity_uniform_    == INVALID_LOCATION) {
+        VP_matrix_uniform_       == INVALID_LOCATION ||
+        obs_pos_uniform_         == INVALID_LOCATION ||
+        obs_impulse_uniform_     == INVALID_LOCATION ||
+        diffuse_texture_uniform_ == INVALID_LOCATION ||
+        inverse_g_uniform_       == INVALID_LOCATION ||
+        obs_ifr_time_uniform_    == INVALID_LOCATION ||
+        map_size_uniform_        == INVALID_LOCATION ||
+        obj_velocity_uniform_    == INVALID_LOCATION) {
 
         fprintf(stderr, "invalid uniform location\n");
         return false;

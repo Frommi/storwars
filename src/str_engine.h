@@ -12,7 +12,7 @@
 #include "static_mesh.h"
 
 struct STRBody {
-	STRBody(const Static_Mesh* mesh);
+    STRBody(const Static_Mesh* mesh);
 
     const StaticMesh* mesh_;
     glm::quat eye_direction_;

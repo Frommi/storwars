@@ -59,7 +59,7 @@ public:
     
     glm::mat4 get_WVP_matrix();
     glm::mat4 get_W_matrix();
-	glm::mat4 get_VP_matrix();
+    glm::mat4 get_VP_matrix();
 
 private:
     glm::mat4 scale_;
