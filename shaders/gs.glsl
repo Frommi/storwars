@@ -21,23 +21,23 @@ uniform vec3 u_ObsImpulse;
 uniform float u_InverseG;
 
 vec3 getLorentz(int i) {
-	vec3 r = -u_ObsPos - gs_position[i];
-	return r + u_ObsImpulse * (length(r) + dot(r, u_ObsImpulse) * u_InverseG);
+    vec3 r = -u_ObsPos - gs_position[i];
+    return r + u_ObsImpulse * (length(r) + dot(r, u_ObsImpulse) * u_InverseG);
 }
 
 void main() {
     //vec3 normal = cross(gs_position[0] - gs_position[1], gs_position[0] - gs_position[2]);
     //normal = normalize(normal);
 
-	for (int i = 0; i < 3; ++i) {
-    	gl_Position = u_VP * vec4(getLorentz(i), 1.0);
-    	fs_position = -u_ObsPos - gs_position[i];
-	    fs_normal = gs_normal[i];
+    for (int i = 0; i < 3; ++i) {
+        gl_Position = u_VP * vec4(getLorentz(i), 1.0);
+        fs_position = -u_ObsPos - gs_position[i];
+        fs_normal = gs_normal[i];
         //fs_normal = normal;
-    	fs_UV = gs_UV[i];
-    	fs_bari = gs_bari[i];
-    	fs_tri = vec3(0.0 + int(i == 0), 0.0 + int(i == 1), 0.0 + int(i == 2));
-	    EmitVertex();
-	}
-	EndPrimitive();
+        fs_UV = gs_UV[i];
+        fs_bari = gs_bari[i];
+        fs_tri = vec3(0.0 + int(i == 0), 0.0 + int(i == 1), 0.0 + int(i == 2));
+        EmitVertex();
+    }
+    EndPrimitive();
 }

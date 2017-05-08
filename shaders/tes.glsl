@@ -20,9 +20,9 @@ vec3 interpolate3D(vec3 v0, vec3 v1, vec3 v2) {
 }
 
 void main() {
-	gs_position = interpolate3D(tes_position[0], tes_position[1], tes_position[2]);
-	gs_UV = interpolate2D(tes_UV[0], tes_UV[1], tes_UV[2]);
-	gs_normal = interpolate3D(tes_normal[0], tes_normal[1], tes_normal[2]);
-	gs_normal = normalize(gs_normal);
-	gs_bari = gl_TessCoord;
+    gs_position = interpolate3D(tes_position[0], tes_position[1], tes_position[2]);
+    gs_UV = interpolate2D(tes_UV[0], tes_UV[1], tes_UV[2]);
+    gs_normal = interpolate3D(tes_normal[0], tes_normal[1], tes_normal[2]);
+    gs_normal = normalize(gs_normal);
+    gs_bari = gl_TessCoord;
 }

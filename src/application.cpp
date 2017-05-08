@@ -78,48 +78,27 @@ void Application::tick(float dt, float& ifr_time) {
 }
 
 void Application::render(float ifr_time) {
+    WorldPipeline pipe;
+    
     roll_ *= 1000.0f;
-
     glm::vec2 d_mouse = -pullCursorDelta();
     camera_->rotatePitchYawRoll(-d_mouse.y, -d_mouse.x, roll_); 
 
-    std::vector<glm::uvec3> pos_buffer;
-    for (int i = 0; i < 9; ++i)
-        for (int j = 0; j < 9; ++j)
-            for (int k = 0; k < 9; ++k)
-                pos_buffer.push_back(glm::uvec3(i, j, k));
+    pipe.set_camera(*camera_);
+    pipe.set_projection(window_);
 
-    for (int i = 0; i <= 0; ++i) {
-        for (int j = 0; j <= 0; ++j) {
-            for (int k = 0; k <= 0; ++k) {
-                WorldPipeline pipe;
+    static_shader_program_->set_obj_velocity_uniform(glm::vec3(0.0f, 0.0f, 0.0f));
+    static_shader_program_->set_W_matrix_uniform(pipe.get_W_matrix());
+    static_shader_program_->set_VP_matrix_uniform(pipe.get_VP_matrix());
+    static_shader_program_->set_obs_impulse_uniform(p_);
+    static_shader_program_->set_obs_pos_uniform(camera_->get_position());
+    static_shader_program_->set_inverse_g_uniform(1.0f / (1.0f + sqrt(1.0f + glm::dot(p_, p_))));
+    static_shader_program_->set_obs_ifr_time_uniform(ifr_time);
+    static_shader_program_->set_map_size_uniform(1.0);
+    static_shader_program_->set_diffuse_texture_uniform(0);
 
-                pipe.set_camera(*camera_);
-                pipe.set_projection(window_);
-                
-                glm::vec3 eye_pos = glm::vec3(i, j, k) * 4.0f;
-                pipe.set_move(eye_pos);
-                pipe.set_move(-camera_->get_position());
+    static_mesh_->render();
 
-                static_shader_program_->set_obj_velocity_uniform(glm::vec3(0.0f, 0.0f, 0.0f));
-
-                static_shader_program_->set_W_matrix_uniform(pipe.get_W_matrix());
-                static_shader_program_->set_VP_matrix_uniform(pipe.get_VP_matrix());
-                
-                static_shader_program_->set_obs_impulse_uniform(p_);
-                static_shader_program_->set_obs_pos_uniform(camera_->get_position());
-                
-                static_shader_program_->set_inverse_g_uniform(1.0f / (1.0f + sqrt(1.0f + glm::dot(p_, p_))));
-                static_shader_program_->set_obs_ifr_time_uniform(ifr_time);
-                static_shader_program_->set_map_size_uniform(1.0);
-                static_shader_program_->set_diffuse_texture_uniform(0);
-                
-                static_mesh_->render();
-
-            }
-        }
-    }
-    
     glfwSwapBuffers(window_);
     glfwPollEvents();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -143,7 +122,7 @@ void Application::run() {  // Temporary
 
     //p_ = glm::vec3(-0.95f / sqrt(1.0f - 0.95f * 0.95f), 0, 0);
     p_ = glm::vec3(0.0f);
-    camera_ = new Camera(glm::vec3(0.0, 3.0, -3.0));
+    camera_ = new Camera(glm::vec3(10.0, -10.0, -3.0));
     //camera_ = new Camera(glm::vec3(0.0, 0.0, 0.0));
 
     glfwSetTime(0.0f);

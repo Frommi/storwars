@@ -14,7 +14,7 @@ out vec3 tes_normal[];
 uniform vec3 u_ObsPos;
 
 float getTessLevel(float d, float l) {
-	//return 1;
+    //return 1;
     return min(16, (l * 64.0) / (d + 0.2));
 }
 
@@ -24,9 +24,9 @@ void main() {
     tes_normal[gl_InvocationID]   = tcs_normal[gl_InvocationID];
 
     if (gl_InvocationID == 0) {
-	    gl_TessLevelOuter[0] = getTessLevel(tcs_lorentz[1] + tcs_lorentz[2], distance(tcs_position[1], tcs_position[2]));
-    	gl_TessLevelOuter[1] = getTessLevel(tcs_lorentz[2] + tcs_lorentz[0], distance(tcs_position[2], tcs_position[0]));
-	    gl_TessLevelOuter[2] = getTessLevel(tcs_lorentz[0] + tcs_lorentz[1], distance(tcs_position[0], tcs_position[1]));
-    	gl_TessLevelInner[0] = gl_TessLevelOuter[2];
+        gl_TessLevelOuter[0] = getTessLevel(tcs_lorentz[1] + tcs_lorentz[2], distance(tcs_position[1], tcs_position[2]));
+        gl_TessLevelOuter[1] = getTessLevel(tcs_lorentz[2] + tcs_lorentz[0], distance(tcs_position[2], tcs_position[0]));
+        gl_TessLevelOuter[2] = getTessLevel(tcs_lorentz[0] + tcs_lorentz[1], distance(tcs_position[0], tcs_position[1]));
+        gl_TessLevelInner[0] = gl_TessLevelOuter[2];
     }
 }

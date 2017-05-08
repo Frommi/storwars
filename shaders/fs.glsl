@@ -19,15 +19,15 @@ float amplify(float d, float scale, float offset) {
 }
 
 float getWave(float l) {
-	float inv_g = inversesqrt(1 + dot(u_ObsImpulse, u_ObsImpulse));
-	float cosT = dot(u_ObsImpulse, fs_position) / (length(u_ObsImpulse) * length(fs_position));
-	cosT = clamp(-1.0, 1.0, cosT);
-	return l * (inv_g / (1.0 + length(u_ObsImpulse) * cosT / inv_g));
+    float inv_g = inversesqrt(1 + dot(u_ObsImpulse, u_ObsImpulse));
+    float cosT = dot(u_ObsImpulse, fs_position) / (length(u_ObsImpulse) * length(fs_position));
+    cosT = clamp(-1.0, 1.0, cosT);
+    return l * (inv_g / (1.0 + length(u_ObsImpulse) * cosT / inv_g));
 }
 
 vec3 rgbByWave(float l) {
-	vec3 res;
-	float t;
+    vec3 res;
+    float t;
          if ((l>=400.0)&&(l<410.0)) { t=(l-400.0)/(410.0-400.0); res.x=    +(0.33*t)-(0.20*t*t); }
     else if ((l>=410.0)&&(l<475.0)) { t=(l-410.0)/(475.0-410.0); res.x=0.14         -(0.13*t*t); }
     else if ((l>=545.0)&&(l<595.0)) { t=(l-545.0)/(595.0-545.0); res.x=    +(1.98*t)-(     t*t); }
@@ -43,7 +43,7 @@ vec3 rgbByWave(float l) {
 }
 
 void main() {
-    vec3 gLightDirection = normalize(vec3(-1.0, -1.0, 0.7));
+    vec3 gLightDirection = normalize(vec3(-1.0, 1.0, 0.7));
 
     float cosTheta = clamp(dot(gLightDirection, fs_normal), 0, 1);
 
@@ -51,15 +51,15 @@ void main() {
     vec3 diffuseColor = vec3(cosTheta) * 0.8;
 
     color = vec4(texture2D(diffuseTexture, fs_UV.xy).xyz * (ambientColor + diffuseColor), 1.0);
-    color = vec4(vec3(1.0) * (ambientColor + diffuseColor), 1.0);
+    //color = vec4(vec3(1.0) * (ambientColor + diffuseColor), 1.0);
     //color = vec4(vec3(cosTheta) * (ambientColor + diffuseColor), 1.0);
 
     float d1 = min(min(fs_tri.x, fs_tri.y), fs_tri.z);
     float d2 = min(min(fs_bari.x, fs_bari.y), fs_bari.z);
 
 //    color = vec4(rgbByWave(getWave(650.0)) * color.x + 
-//    			 rgbByWave(getWave(510.0)) * color.y +
-//    			 rgbByWave(getWave(475.0)) * color.z, 1.0);
+//               rgbByWave(getWave(510.0)) * color.y +
+//               rgbByWave(getWave(475.0)) * color.z, 1.0);
     
 //    color = vec4(rgbByWave(getWave(575.0)), 1.0);
 
