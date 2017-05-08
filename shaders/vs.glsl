@@ -30,10 +30,9 @@ vec3 rot(float a, vec3 v) {
 void main() {
     u_ObsIFRTime + u_MapSize + u_ObjVelocity.x;
     tcs_position = (u_W * vec4(Position * 0.1, 1.0)).xyz;
-//    tcs_position *= 0.1;
-        
-/*
+    tcs_position *= 0.1;
 
+/*
     float l = -10000.0 - u_MapSize * 0.00001;
     float r = u_ObsIFRTime;
     for (int i = 0; i < 0; ++i) {
@@ -46,7 +45,6 @@ void main() {
         }
     }
     tcs_position = rot(l, tcs_position);
-
 */
 
     tcs_lorentz = length(getLorentz());

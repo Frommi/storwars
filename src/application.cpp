@@ -1,11 +1,37 @@
 #include "application.h"
 
-Application::Application() {}
+Application::Application() {
+    static_shader_program_ = new StaticShaderProgram();
+    static_shader_program_->initShaderProgram();
+    static_shader_program_->enable();
+
+    static_mesh_ = new StaticMesh();
+    //static_mesh_->loadFromFile("models/sphere.obj");
+    //static_mesh_->loadFromFile("models/city/", "city.obj");
+    static_mesh_->loadFromFile("models/island/", "island.obj");
+    //static_mesh_->loadFromFile("models/sphere/sphere/", "sphere.obj");
+    //static_mesh_->loadFromFile("models/big_sphere/", "sphere.obj");
+    //static_mesh_->loadFromFile("models/monkey/", "monkey.obj");
+    //static_mesh_->loadFromFile("models/torus/", "2torus.obj");
+    //static_mesh_->loadFromFile("models/wheel/", "wheel1.obj");
+    //static_mesh_->loadFromFile("models/big_dice/", "dice.obj");
+
+    p_ = glm::vec3(0.0f);
+    camera_ = new Camera(glm::vec3(10.0, -10.0, -3.0));
+
+    glfwSetTime(0.0f);
+    int cnt = 0;
+    float dt = 0;
+    float pref = static_cast<float>(glfwGetTime());
+    float ifr_time = 0.0f;
+    int fps_tick = 1000;
+}
 
 void Application::initApp() {
     if (!glfwInit()) exit(EXIT_FAILURE);
     glfwSetErrorCallback(errorCallback);
 
+    // window_ = glfwCreateWindow(1200, 675, "SToR Wars", NULL, NULL);
     GLFWmonitor* monitor = glfwGetPrimaryMonitor();
     const GLFWvidmode* mode = glfwGetVideoMode(monitor);
     glfwWindowHint(GLFW_RED_BITS, mode->redBits);
@@ -14,7 +40,6 @@ void Application::initApp() {
     glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
     window_ = glfwCreateWindow(mode->width, mode->height, "SToR Wars", monitor, NULL);
 
-    // window_ = glfwCreateWindow(1200, 675, "SToR Wars", NULL, NULL);
     if (!window_) {
         glfwTerminate();
         exit(EXIT_FAILURE);
@@ -79,7 +104,7 @@ void Application::tick(float dt, float& ifr_time) {
 
 void Application::render(float ifr_time) {
     WorldPipeline pipe;
-    
+
     roll_ *= 1000.0f;
     glm::vec2 d_mouse = -pullCursorDelta();
     camera_->rotatePitchYawRoll(-d_mouse.y, -d_mouse.x, roll_); 
@@ -104,33 +129,7 @@ void Application::render(float ifr_time) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void Application::run() {  // Temporary
-    static_shader_program_ = new StaticShaderProgram();
-    static_shader_program_->initShaderProgram();
-    static_shader_program_->enable();
-
-    static_mesh_ = new StaticMesh();
-    //static_mesh_->loadFromFile("models/sphere.obj");
-    //static_mesh_->loadFromFile("models/city/", "city.obj");
-    static_mesh_->loadFromFile("models/island/", "island.obj");
-    //static_mesh_->loadFromFile("models/sphere/sphere/", "sphere.obj");
-    //static_mesh_->loadFromFile("models/big_sphere/", "sphere.obj");
-    //static_mesh_->loadFromFile("models/monkey/", "monkey.obj");
-    //static_mesh_->loadFromFile("models/torus/", "2torus.obj");
-    //static_mesh_->loadFromFile("models/wheel/", "wheel1.obj");
-    //static_mesh_->loadFromFile("models/big_dice/", "dice.obj");
-
-    //p_ = glm::vec3(-0.95f / sqrt(1.0f - 0.95f * 0.95f), 0, 0);
-    p_ = glm::vec3(0.0f);
-    camera_ = new Camera(glm::vec3(10.0, -10.0, -3.0));
-    //camera_ = new Camera(glm::vec3(0.0, 0.0, 0.0));
-
-    glfwSetTime(0.0f);
-    int cnt = 0;
-    float dt = 0;
-    float pref = static_cast<float>(glfwGetTime());
-    float ifr_time = 0.0f;
-    int fps_tick = 1000;
+void Application::run() {
     while (!glfwWindowShouldClose(window_)) {
         updateInput();
         float t = static_cast<float>(glfwGetTime());
@@ -141,7 +140,6 @@ void Application::run() {  // Temporary
         ++cnt;
         if (dt > fps_tick * 0.001) {
             printf("frames per %d millisec: %d, milisec for frame: %d\n", fps_tick, cnt, fps_tick / cnt);
-//          printf("ifr_time: %f, self_time: %f\n", ifr_time, t);
             cnt = 0;
             dt -= fps_tick * 0.001;
         }
