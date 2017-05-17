@@ -1,4 +1,0 @@
-1) bucket -- every vertex in one of 32 (cnt_levels) buckets, meanig to start from tick "-i", time "-i/60.0f".
-2) tick_num --> level, pos O(1): precalc  (2^x mod p), search for min x : 2^x >= t/16 (level_len), pos ~= t / 2^x
-3) try t and t += 2^x, etc (2^x is big very soon, so O(1) steps)
-4) 
