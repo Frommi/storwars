@@ -34,7 +34,7 @@ private:
 
     GLFWwindow* window_;
 
-    void updateInput();
+    void updateInput(float dt);
     void tick(float dt, float& ifr_time);
     void render(float ifr_time);
 
@@ -44,4 +44,11 @@ private:
     StaticMesh* static_mesh_;
     StaticShaderProgram* static_shader_program_;
     float roll_;
+
+    int frame_num_;
+    float dt_;
+    float prev_time_;
+    float ifr_time_;
+
+    const int FPS_TICK = 1000;
 };

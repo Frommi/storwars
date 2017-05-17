@@ -15,7 +15,7 @@ uniform vec3 u_ObsPos;
 
 float getTessLevel(float d, float l) {
     //return 1;
-    return min(16, (l * 64.0) / (d + 0.2));
+    return min(8, (l * 64.0) / (d + 0.2));
 }
 
 void main() {

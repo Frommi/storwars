@@ -63,5 +63,5 @@ void main() {
     
 //    color = vec4(rgbByWave(getWave(575.0)), 1.0);
 
-    color *= amplify(d2, 60, -0.5);// * amplify(d1, 40, -0.5);
+    color *= amplify(d2, 60, -0.5) * amplify(d1, 40, -0.5);
 }

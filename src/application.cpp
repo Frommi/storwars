@@ -1,30 +1,7 @@
 #include "application.h"
 
 Application::Application() {
-    static_shader_program_ = new StaticShaderProgram();
-    static_shader_program_->initShaderProgram();
-    static_shader_program_->enable();
 
-    static_mesh_ = new StaticMesh();
-    //static_mesh_->loadFromFile("models/sphere.obj");
-    //static_mesh_->loadFromFile("models/city/", "city.obj");
-    static_mesh_->loadFromFile("models/island/", "island.obj");
-    //static_mesh_->loadFromFile("models/sphere/sphere/", "sphere.obj");
-    //static_mesh_->loadFromFile("models/big_sphere/", "sphere.obj");
-    //static_mesh_->loadFromFile("models/monkey/", "monkey.obj");
-    //static_mesh_->loadFromFile("models/torus/", "2torus.obj");
-    //static_mesh_->loadFromFile("models/wheel/", "wheel1.obj");
-    //static_mesh_->loadFromFile("models/big_dice/", "dice.obj");
-
-    p_ = glm::vec3(0.0f);
-    camera_ = new Camera(glm::vec3(10.0, -10.0, -3.0));
-
-    glfwSetTime(0.0f);
-    int cnt = 0;
-    float dt = 0;
-    float pref = static_cast<float>(glfwGetTime());
-    float ifr_time = 0.0f;
-    int fps_tick = 1000;
 }
 
 void Application::initApp() {
@@ -57,13 +34,39 @@ void Application::initApp() {
     glDepthFunc(GL_LESS);
 
     this->initInputHandler(window_);
+
+    static_shader_program_ = new StaticShaderProgram();
+    static_shader_program_->initShaderProgram();
+    static_shader_program_->enable();
+
+    static_mesh_ = new StaticMesh();
+    //static_mesh_->loadFromFile("models/sphere.obj");
+    //static_mesh_->loadFromFile("models/city/", "city.obj");
+    static_mesh_->loadFromFile("models/island/", "island.obj");
+    //static_mesh_->loadFromFile("models/sphere/sphere/", "sphere.obj");
+    //static_mesh_->loadFromFile("models/big_sphere/", "sphere.obj");
+    //static_mesh_->loadFromFile("models/monkey/", "monkey.obj");
+    //static_mesh_->loadFromFile("models/torus/", "2torus.obj");
+    //static_mesh_->loadFromFile("models/wheel/", "wheel1.obj");
+    //static_mesh_->loadFromFile("models/big_dice/", "dice.obj");
+
+    p_ = glm::vec3(0.0f);
+    camera_ = new Camera(glm::vec3(3.0, -3.0, -1.0));
+
+    glfwSetTime(0.0f);
+    frame_num_ = 0;
+    dt_ = 0;
+    prev_time_ = static_cast<float>(glfwGetTime());
+    ifr_time_ = 0.0f;
 }
 
 void Application::terminateApp() {
     glfwTerminate();
 }
                      
-void Application::updateInput() {
+void Application::updateInput(float dt) {
+    const float k = dt * 60.0;
+
     if (this->isKeyboardKeyPressed(GLFW_KEY_ESCAPE)) 
         glfwSetWindowShouldClose(window_, GL_TRUE);
 
@@ -81,18 +84,18 @@ void Application::updateInput() {
     if (this->isKeyboardKeyPressed(GLFW_KEY_W)) 
         f_ += camera_->get_target();
 
-    if (glm::dot(f_, f_) > 1e-6) f_ = glm::normalize(f_) / 100.0f;
+    if (glm::dot(f_, f_) > 1e-6) f_ = glm::normalize(f_) * 0.01f * k;
     if (this->isKeyboardKeyPressed(GLFW_KEY_Z)) f_ *= 3;
 
     if (this->isKeyboardKeyPressed(GLFW_KEY_SPACE))
-        f_ = -p_ * 0.1f;
+        f_ = -p_ * 0.1f * k;
 
     roll_ = 0.0f;
     if (this->isKeyboardKeyPressed(GLFW_KEY_Q)) 
-        roll_ += 0.1f;
+        roll_ += 0.1f * k;
 
     if (this->isKeyboardKeyPressed(GLFW_KEY_E)) 
-        roll_ -= 0.1f;
+        roll_ -= 0.1f * k;
 }
 
 void Application::tick(float dt, float& ifr_time) {
@@ -131,17 +134,17 @@ void Application::render(float ifr_time) {
 
 void Application::run() {
     while (!glfwWindowShouldClose(window_)) {
-        updateInput();
         float t = static_cast<float>(glfwGetTime());
-        dt += t - pref;
-        tick(t - pref, ifr_time);
-        pref = t;
-        render(ifr_time);
-        ++cnt;
-        if (dt > fps_tick * 0.001) {
-            printf("frames per %d millisec: %d, milisec for frame: %d\n", fps_tick, cnt, fps_tick / cnt);
-            cnt = 0;
-            dt -= fps_tick * 0.001;
+        updateInput(t - prev_time_);
+        dt_ += t - prev_time_;
+        tick(t - prev_time_, ifr_time_);
+        prev_time_ = t;
+        render(ifr_time_);
+        ++frame_num_;
+        if (dt_ > FPS_TICK * 0.001) {
+            printf("frames per %d millisec: %d, milisec for frame: %d\n", FPS_TICK, frame_num_, FPS_TICK / frame_num_);
+            frame_num_ = 0;
+            dt_ -= FPS_TICK * 0.001;
         }
     }
 }
